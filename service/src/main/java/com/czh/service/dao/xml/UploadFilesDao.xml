@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czh.service.dao.UploadFilesDao">
+
+    <resultMap type="com.czh.service.entity.UploadFiles" id="UploadFilesMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="domain" column="domain" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="key" column="key" jdbcType="VARCHAR"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="atime" column="atime" jdbcType="TIMESTAMP"/>
+        <result property="pid" column="pid" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="selectByPid" resultType="com.czh.service.vo.admin.GetFileListVo"
+            parameterType="com.czh.service.dto.admin.GetFileListDto">
+        select id,url,name,type from czh_upload_files
+        <where>
+            <if test="pid!=null">
+                and pid=#{pid}
+            </if>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="type!=null and type>0">
+                and (type=#{type} or type=8)
+            </if>
+        </where>
+    </select>
+    <select id="getImgList" resultType="com.czh.service.vo.admin.UploadLog">
+        select id,type as file_type, domain  as type,name as file_name,url,atime from czh_upload_files where type=1
+    </select>
+
+
+</mapper>
+

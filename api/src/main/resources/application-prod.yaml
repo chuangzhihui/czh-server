@@ -1,0 +1,128 @@
+server:
+  port: 8081
+
+#本地文件保存路径
+file:
+  upload-path: /home/www/uploads/
+  upload-url: http://java.honghukeji.net:8092/
+
+spring:
+  #sql
+  sql:
+    host: 127.0.0.1
+    dbname: cdz
+    port: 3306
+    username: cdz
+    password: Bck5hjiLDfzrTEw8
+  #mongoDB
+  data:
+    mongodb:
+      host: 127.0.0.1
+      port: 27017
+      username: cdz
+      password: 3s2czxxr5KGdWNxE
+      database: cdz
+  #mysql
+  datasource:
+    url: jdbc:mysql://${spring.sql.host}:${spring.sql.port}/${spring.sql.dbname}?useUnicode=true&&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    username: ${spring.sql.username}
+    password: ${spring.sql.password}
+    #数据库备份地址
+    backuppath: /home/www/backup/
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 10
+      max-lifetime: 30000
+      connection-test-query: SELECT 1
+  #redis配置
+  # Redis数据库索引（默认为0）
+  redis:
+    database: 0
+    # Redis服务器地址
+    host: 127.0.0.1
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password:
+    # 连接池最大连接数（使用负值表示没有限制）
+    lettuce:
+      pool:
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+    # 连接超时时间（毫秒）
+    connect-timeout: 1000
+  # 上传文件总的最大值
+  servlet:
+    multipart:
+      max-request-size: 1000MB
+      # 单个文件的最大值
+      max-file-size: 100MB
+  web:
+    resources:
+      static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:${file.upload-path}
+  jackson:
+    time-zone: Asia/Shanghai
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+#mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath:com/honghukeji/hhkj/dao/xml/*.xml
+  type-aliases-package: com.honghukeji.hhkj.dao
+  configuration:
+    call-setters-on-nulls: true
+    #不进行驼峰转下划线
+    map-underscore-to-camel-case: false
+  #表前缀
+  global-config:
+    db-config:
+      table-prefix: hhkj_
+
+#关闭工程中的资源文件建立映射
+#logging:
+#  level:
+#    com:
+#      honghukeji:
+#        hhkj:
+#          dao: debug
+
+
+config:
+  domain: https://www.datangchaochong.cn
+  wx:
+    #微信小程序
+    miniapp:
+      #APPID
+      appid: wxde41e8d772755f75
+      #appsecret
+      secret: 24c9c0121ae9914cf9b6d2420361bf2a
+    #微信支付配置
+    pay:
+      #v3秘钥
+      app-v3-secret: 1323297cbcdda6b5a2e3a2758ba8ba05
+      #商户号
+      mch-id: 1710988854
+      #证书序列号
+      merchantSerialNumber: 6AF25377C8F76163D1792534CD3693DA962C8761
+      #key文件
+      apiclient-key: /www/wwwroot/cdz/certs/wechat/apiclient_key.pem
+      #微信公钥
+      publicKeyPath: /www/wwwroot/cdz/certs/wechat/pub_key.pem
+      #微信公钥ID
+      publicKeyId: PUB_KEY_ID_0117109888542025031800388000002297
+  #支付宝配置
+  alipay:
+    #小程序APPID
+    appid: 2021005123687947
+    #私钥
+    privateKey: MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCVdgvJWBv6Y4p/n53VL+pbG3h4FZnDUXbKbOFFLSurycvyFxPFDHlZ3KXFPLa5yr/286aP/vNS3H/oKN7zo625boVtfHpE9g5st6CUgUgO0LWE6RJFvX8RUSmQ8WIL5/4Glu99BJ6qvRqNScfZVEhW2g1N9FGWND8YtvTOYA3nF50blmyEAYdJHRue1MSPEqRzdEo0Emgwhx7NFFXXY5nrQQWoYkt9aq371kzSgSiMu8I9/FHkj5XGL59WGMql329oryK3zBy1RFBAtSAI5aV1ujXTd18vfk8EalKtuHJYyeGaaE1PTuuX6ER/pB9xW6lnST68Q3MWZpwr7XUYAVcPAgMBAAECggEAU0B61j9e7jzuE6K8TtiuyOrnUrRtfs9sxNqbLGY50inIkWPrXjJRkg2GxPPJsHnQLeWQHNtdfAVYtd+2OK4ugYCfj9nrXWhVppcuOio9EguNYKhWxkQEeIfmCFd8Trd91vvSEKg3HVHSbWrwiA0bck1pZce2fl1B3Clk+WOlutecaFAHcSJIVRUHrkQ08xUqulWS56cFKeUUzvq9rFbFGPz6HRyjAmfavRUoMf7xwqG4DNGKg1MGPE9x7zmqjhqU/VAH9WR4FWiqLQWpKNYuDrp6dy1TjU970xy1vXkVTmlyO+qrP43voroOE33ewr+uqlD9a0N9BorGf9xjjZrfOQKBgQDyuLNrHfFM18f47jR5GLdbqPZvqmty7kvAxnygftyaT23QRb7YUfs9IUdB70z7A+wiepPvdV0XHf7/iSxVSnk78WUMPPwihIBBPYEvNFffzqZJJevedSC75TarbAkyRhIdaV3dwYR9ItxQU0ofcMNrklrE2i1EH+WNAgiTkgvyywKBgQCdoz1UzM8XOOCicihP9Jlcx+F5lcOCGJwN0hWaflR0YSYgXhT6bloQo7EbxB9UqVUvFDC6pgas3JA0xHK0bmOFgjx0AXJsjhmjU70CrJmPrR56ModoyDOPeJiuDPbLuKestA94QU78I07yp5gDCqB27fLKcZbGJK81s4F8jAHwTQKBgQDohKPsU6zbTkNVZuyBrXnJpx0dcAaq/Tk4nWy6W419jeXHBWmD1VV3BDA9K791IBbQGNkrJiVdhfDIX2JG+qcVE3UXujxX3NL4rLDaxawAzPhjTp6cZ1xKY5Rxt3c/3/xujIfNbhs7vW+My51QbTfoDzZBKjj+8Ad5g58vr1Me7QKBgQCBWKOHhHJcvKfdw0v+p1Z7werqCBAfHLBXys09MnF7+Qb+whP2lTvDsX0uqlOG9VbXRXrifD638ldFZPg1wupYb0/JZDKOjl7NHHXXzuZF9Sgv3mwrdzKPg8XL8wlCiibTV//ljbkQvKwYAZqCzGJ0k7SHloK/3PQDXWJfXsZsdQKBgQChTRZs5r9H6lrAwUq34c3S4cEQkKTRNqkxtp4SWHrNcQMHDrByXyEANosX5BvRVyqhKWnCr6BflidZs0mqdTT7JLUoHc2DWTF3DWFSTZEOfT7QcXGj0uT4x9KyARI46fTFUeQH+Bfl3bq+kNOcIRrPZeCmRrHNTpqoYXrIQxVQzw==
+    appCertPath: /www/wwwroot/cdz/certs/alipay/appCertPublicKey_2021005123687947.crt
+    alipayPublicCertPath: /www/wwwroot/cdz/certs/alipay/alipayCertPublicKey_RSA2.crt
+    rootCertPath: /www/wwwroot/cdz/certs/alipay/alipayRootCert.crt
+    aesKey: lAT7yrc+6CgWUSvOkLKSUA==

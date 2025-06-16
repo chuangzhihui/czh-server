@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czh.service.dao.AuthConfigDao">
+
+    <resultMap type="com.czh.service.entity.AuthConfig" id="AuthConfigMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="pwdReg" column="pwdReg" jdbcType="VARCHAR"/>
+        <result property="failNum" column="failNum" jdbcType="INTEGER"/>
+        <result property="failNumTime" column="failNumTime" jdbcType="INTEGER"/>
+        <result property="pwdRegDesc" column="pwdRegDesc" jdbcType="VARCHAR"/>
+        <result property="timeOut" column="timeOut" jdbcType="INTEGER"/>
+        <result property="passMax" column="passMax" jdbcType="INTEGER"/>
+        <result property="passWran" column="passWran" jdbcType="INTEGER"/>
+        <result property="autoBackup" column="autoBackup" jdbcType="INTEGER"/>
+        <result property="bakupDbCron" column="bakupDbCron" jdbcType="VARCHAR"/>
+        <result property="atime" column="atime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+   
+
+</mapper>
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czh.service.dao.MenuDao">
+
+    <resultMap type="com.czh.service.entity.Menu" id="MenuMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="pid" column="pid" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="path" column="path" jdbcType="VARCHAR"/>
+        <result property="route" column="route" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="INTEGER"/>
+        <result property="icon" column="icon" jdbcType="VARCHAR"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="display" column="display" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="getAuthMenuList" resultType="com.czh.service.vo.admin.AuthMenuVo">
+        select id,path,name as title,icon from czh_menu where pid=#{pid} and id in(${ids}) and display=1 order by sort asc
+    </select>
+    <select id="getMenusByPid" resultType="com.czh.service.vo.admin.GetMenusByPidVo"
+            parameterType="java.lang.Integer">
+        select id,name from czh_menu where pid=#{pid} order by sort asc
+    </select>
+    <select id="getMenuListByPid" resultType="com.czh.service.vo.admin.GetMenuListVo"
+            parameterType="java.lang.Integer">
+        select * from czh_menu where pid=#{pid} order by sort asc
+    </select>
+
+
+</mapper>
+

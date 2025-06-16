@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czh.service.dao.SettingDao">
+
+    <resultMap type="com.czh.service.entity.Setting" id="SettingMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="value" column="value" jdbcType="VARCHAR"/>
+        <result property="canDel" column="canDel" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="getSettingList" resultType="com.czh.service.vo.admin.GetSettingListVo">
+        select * from czh_setting
+    </select>
+
+
+</mapper>
+

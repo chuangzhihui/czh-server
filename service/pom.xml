@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.czh</groupId>
+		<artifactId>czh</artifactId>
+		<version>${revision}</version>
+		<!-- 指定一个本地的路径，从本地路径获取parent的pom -->
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>com.czh</groupId>
+	<artifactId>service</artifactId>
+	<version>${revision}</version>
+	<name>service</name>
+	<description>service</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.czh</groupId>
+			<artifactId>common</artifactId>
+			<version>${revision}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<resources>
+			<!-- java文件夹下只编译java文件， xml文件没有进行编译。在此指定需要编译的xml文件位置 -->
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<!--<filtering>true</filtering>-->
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czh.service.dao.AdminDao">
+
+    <resultMap type="com.czh.service.entity.Admin" id="AdminMap">
+        <result property="adminId" column="adminId" jdbcType="INTEGER"/>
+        <result property="userName" column="userName" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="lastLoginIp" column="lastLoginIp" jdbcType="VARCHAR"/>
+        <result property="lastLoginTime" column="lastLoginTime" jdbcType="TIMESTAMP"/>
+        <result property="roleId" column="roleId" jdbcType="INTEGER"/>
+        <result property="atime" column="atime" jdbcType="TIMESTAMP"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="lastTryLoginIp" column="lastTryLoginIp" jdbcType="VARCHAR"/>
+        <result property="lastTryLoginTime" column="lastTryLoginTime" jdbcType="TIMESTAMP"/>
+        <result property="failNum" column="failNum" jdbcType="INTEGER"/>
+        <result property="lastChangePwdTime" column="lastChangePwdTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="getAdminList" resultType="com.czh.service.vo.admin.AdminListVo"
+            parameterType="com.czh.service.dto.admin.AdminListDto">
+        select a.*,b.roleName
+        from   czh_admin as a
+        inner join czh_role as b on a.roleId=b.roleId
+        <where>
+            <if test="name!=null and name!=''">
+                and a.userName like concat('%',#{name},'%')
+            </if>
+            <if test="roleId>0">
+                and a.roleId=#{roleId}
+            </if>
+        </where>
+    </select>
+    <select id="getAdminSelectList" resultType="com.czh.common.vo.SelectVo">
+        select adminId as value,userName as label from czh_admin where status=1
+    </select>
+
+
+</mapper>
+

@@ -1,0 +1,87 @@
+#开发环境
+server:
+  port: 8081
+
+spring:
+    #sql
+    sql:
+      host: 192.168.1.168
+      dbname: jichu
+      port: 3306
+      username: jichu
+      password: kkRPPpZ6EJkdhYNc
+    #mongoDB
+    data:
+      mongodb:
+        host: 192.168.1.168
+        port: 27017
+        username: demo
+        password: sEBc3Fs7Thy8NGMR
+        database: demo
+      redis:
+        # Redis服务器地址
+        host: 127.0.0.1
+        # Redis服务器连接端口
+        port: 6379
+        # Redis服务器连接密码（默认为空）
+        password:
+        # 连接池最大连接数（使用负值表示没有限制）
+        lettuce:
+          pool:
+            max-active: 200
+            # 连接池最大阻塞等待时间（使用负值表示没有限制）
+            max-wait: -1
+            # 连接池中的最大空闲连接
+            max-idle: 10
+            # 连接池中的最小空闲连接
+            min-idle: 0
+        # 连接超时时间（毫秒）
+        connect-timeout: 1000
+  #mysql
+    datasource:
+      url: jdbc:mysql://${spring.sql.host}:${spring.sql.port}/${spring.sql.dbname}?useUnicode=true&&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+      username: ${spring.sql.username}
+      password: ${spring.sql.password}
+    #数据库备份地址
+      backuppath: /www/wwwroot/test/
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        minimum-idle: 1
+        maximum-pool-size: 10
+        max-lifetime: 30000
+        connection-test-query: SELECT 1
+# 上传文件总的最大值
+    servlet:
+      multipart:
+        max-request-size: 1000MB
+        # 单个文件的最大值
+        max-file-size: 100MB
+    web:
+      resources:
+        static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:${file.upload-path}
+    jackson:
+      time-zone: Asia/Shanghai
+    aop:
+      proxy-target-class: true
+
+#mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath:com/czh/service/dao/xml/*.xml
+  type-aliases-package: com.czh.service.dao
+  configuration:
+    call-setters-on-nulls: true
+    #进行驼峰转下划线
+    map-underscore-to-camel-case: false
+    use-actual-param-name: true
+  #    log-impl: org.apache.ibatis.logging.log4j2.Log4j2LoggerImpl
+  #表前缀
+  global-config:
+    db-config:
+      table-prefix: czh_
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+#关闭工程中的资源文件建立映射
+logging:
+  level:
+    com.czh.service.dao: debug
