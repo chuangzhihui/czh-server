@@ -26,4 +26,8 @@ public class AddFileDto {
     private String url;//文件地址
     @NotNull(message = "上级目录ID不能为空")
     private int pid;//上级目录ID 顶级目录为0
+    private Integer fileWidth;//图片或者视频宽其它为0
+    private Integer fileHeight;//图片或者视频高其它为0
+    private Integer fileSize;//文件大小kb
+    private String thumb;//图片的缩略图或者视频的封面图
 }

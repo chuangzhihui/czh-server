@@ -11,6 +11,7 @@ import com.czh.common.utils.aliOssUtil.entity.AliOssEntity;
 import com.czh.common.utils.localUploadUtil.entity.LocalUploadConfig;
 import com.czh.common.utils.qiniuUtil.QiniuUtil;
 import com.czh.common.utils.qiniuUtil.entity.QiniuEntity;
+import com.czh.common.utils.tosUtil.entity.TosEntity;
 import com.czh.common.utils.txCosUtil.TxCosUtil;
 import com.czh.common.utils.txCosUtil.entity.TxCosEntity;
 import com.czh.service.dao.UploadSetDao;
@@ -67,11 +68,13 @@ public class UploadSetServiceImpl extends ServiceImpl<UploadSetDao,UploadSet> im
             String uptoken= StringUtil.getRadomStr(32);
             redisUtil.set(uptoken,"1");
             redisUtil.expireAt(uptoken, DateUtil.addSeconds(DateUtil.getDaDate(),3600*24));
-            json.put("uptoken",uptoken);
+            json.put("token",uptoken);
             json.put("uploadUrl",localUploadConfig.getHost());
             json.put("domain",localUploadConfig.getDomain());
         }else if(set.getVisible().equals(5)){
             //火山云-这里啥也不返回
+            TosEntity tosEntity=JSON.toJavaObject(JSONObject.parseObject(set.getTos()),TosEntity.class);
+            json.put("domain",tosEntity.getDomain());
         }else{
             throw new Error("未配置上传信息");
         }

@@ -123,7 +123,7 @@ public class TxCosUtil {
             json.put("ExpiredTime",response.expiredTime);
             json.put("Bucket",bucketName);
             json.put("Region",bucket);
-            json.put("path",path);
+            json.put("domain",path);
             return json;
         } catch (Exception e) {
             throw new ErrorException("获取失败!");

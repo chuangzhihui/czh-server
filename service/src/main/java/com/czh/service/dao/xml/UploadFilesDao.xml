@@ -12,9 +12,9 @@
         <result property="atime" column="atime" jdbcType="TIMESTAMP"/>
         <result property="pid" column="pid" jdbcType="INTEGER"/>
     </resultMap>
-    <select id="selectByPid" resultType="com.czh.service.vo.admin.GetFileListVo"
+    <select id="selectByPid" resultType="com.czh.service.entity.UploadFiles"
             parameterType="com.czh.service.dto.admin.GetFileListDto">
-        select id,url,name,type from czh_upload_files
+        select * from czh_upload_files
         <where>
             <if test="pid!=null">
                 and pid=#{pid}

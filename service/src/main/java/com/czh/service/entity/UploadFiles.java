@@ -42,4 +42,9 @@ private static final long serialVersionUID=1L;
     private Date atime;
     //上级目录ID 顶级目录为0    
     private Integer pid;
+
+    private Integer fileWidth;//图片或者视频宽其它为0
+    private Integer fileHeight;//图片或者视频高其它为0
+    private Integer fileSize;//文件大小kb
+    private String thumb;//图片的缩略图或者视频的封面图
 }

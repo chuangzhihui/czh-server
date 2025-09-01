@@ -38,12 +38,12 @@ import java.util.Map;
 public class UploadController extends BaseController {
 
     @RequestMapping("/upload")
-    public JSONResult<LocalUploadVo> upload(@RequestParam("file") MultipartFile file){
-        LocalUploadVo vo=doUpload(file);
+    public JSONResult<LocalUploadVo> upload(@RequestParam("file") MultipartFile file,@RequestParam("dir") String dir){
+        LocalUploadVo vo=doUpload(file,dir);
         return JSONResult.success(vo);
     }
 
-    private LocalUploadVo doUpload(MultipartFile file)
+    private LocalUploadVo doUpload(MultipartFile file,String dir)
     {
         UploadSet set=uploadSetService.getById(1);
         if(set==null || set.getLocal()==null || set.getLocal().isEmpty()){
@@ -51,7 +51,7 @@ public class UploadController extends BaseController {
         }
         LocalUploadConfig localUploadConfig= JSON.toJavaObject(JSONObject.parseObject(set.getLocal()),LocalUploadConfig.class);
         LocalUploadUtil localUploadUtil=new LocalUploadUtil(localUploadConfig);
-        return localUploadUtil.upload(file);
+        return localUploadUtil.upload(file,dir);
     }
 
 
@@ -113,7 +113,7 @@ public class UploadController extends BaseController {
             fileUrl=txCosUtil.getPath()+"/"+fileKey;
         }else if(config.getVisible()==4){
             //本地上传
-            LocalUploadVo localUploadVo=doUpload(multipartFile);
+            LocalUploadVo localUploadVo=doUpload(multipartFile,"ueditor");
             fileUrl=localUploadVo.getUrl();
         }
         else if(config.getVisible()==5){

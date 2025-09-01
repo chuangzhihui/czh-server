@@ -22,7 +22,6 @@ import com.czh.service.entity.AuthConfig;
 import com.czh.service.entity.Setting;
 import com.czh.service.entity.UploadFiles;
 import com.czh.service.entity.UploadSet;
-import com.czh.service.vo.admin.GetFileListVo;
 import com.czh.service.vo.admin.GetSettingListVo;
 import com.czh.service.vo.admin.GetUploadConfigVo;
 import com.github.pagehelper.PageInfo;
@@ -266,9 +265,8 @@ public class SettingController extends BaseController {
     @Permission(required = false)
     public JSONResult<EmptyVo> addFile(@RequestBody @Valid AddFileDto req, BindingResult result){
         ValidateUtil.checkError(result);
-        UploadFiles files=new UploadFiles(
-                0,req.getDomain(),req.getType(), req.getName(), req.getKey(), req.getUrl(), DateUtil.getDaDate(), req.getPid()
-        );
+        UploadFiles files=new UploadFiles();
+        BeanUtils.copyProperties(req, files);
         if(uploadFilesService.save(files)){
             return JSONResult.success();
         }
@@ -293,9 +291,9 @@ public class SettingController extends BaseController {
      */
     @RequestMapping("/getFileList")
     @Permission(required = false)
-    public JSONResult<PageInfo<GetFileListVo>>getFileList(@RequestBody GetFileListDto req)
+    public JSONResult<PageInfo<UploadFiles>>getFileList(@RequestBody GetFileListDto req)
     {
-        PageInfo<GetFileListVo> pageInfo=uploadFilesService.getFileList(req);
+        PageInfo<UploadFiles> pageInfo=uploadFilesService.getFileList(req);
         return JSONResult.success(pageInfo);
     }
 

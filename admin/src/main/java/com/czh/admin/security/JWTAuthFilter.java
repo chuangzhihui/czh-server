@@ -69,9 +69,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                             AuthConfig authConfig=authConfigService.getById(1);
                             //更新token过期时间
                             redisUtil.setEx("adminToken_"+adminId,redisToken,authConfig.getTimeOut(), TimeUnit.SECONDS);
-
-
-                            checkPermission(request,admin.getRoleId());
                             AdminDetails adminDetails=new AdminDetails(admin);
                             List<SimpleGrantedAuthority> permissions=checkPermission(request,admin.getRoleId());
 //                            adminDetails.setPermissions(permissions);
@@ -83,6 +80,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                         }
                     }
                 } catch (Throwable  j) {
+                    j.printStackTrace();
                     //这里面只做校验 不做拦截
 //                    throw new NotLoginException();
                 }
@@ -101,8 +99,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         List<SimpleGrantedAuthority> adminPermissions = new ArrayList<>();
         adminPermissions.add(new SimpleGrantedAuthority("admin"));
-        HandlerMethod handlerMethod = (HandlerMethod) requestMappingHandlerMapping
-                .getHandler(request).getHandler();
+        HandlerMethod handlerMethod = (HandlerMethod) requestMappingHandlerMapping.getHandler(request).getHandler();
         Method method = handlerMethod.getMethod();
         Permission permission = method.getAnnotation(Permission.class);
         if(permission!=null && !permission.required())

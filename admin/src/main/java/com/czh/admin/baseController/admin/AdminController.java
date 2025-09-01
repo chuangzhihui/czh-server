@@ -107,8 +107,8 @@ public class AdminController extends BaseController {
      * @param req
      * @return
      */
-    @RequestMapping("/editPwd")
-    @Log(operation = "修改密码")
+    @PostMapping("/editPwd")
+//    @Log(operation = "修改密码")
     @Permission(required = false)
     public JSONResult<EmptyVo> editPwd(@RequestBody EditPwdDto req){
         AdminDetails adminDetails= SecurityUtil.getLoginInfo(AdminDetails.class);

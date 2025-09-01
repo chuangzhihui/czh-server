@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.Arrays;
 
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Service
@@ -69,10 +70,24 @@ public class AsyncServiceImpl implements AsyncService {
             txCos.delFile(key);
         }else if (domain == 4) {
             //删除本地目录文件
-            File f = new File(file.getKey());
+            String srcFilePath=file.getKey();
+            File f = new File(srcFilePath);
             if (f.exists()) {
                 f.delete();
             }
+            String[] arrs1=srcFilePath.split("\\.");
+            String suffix=arrs1[arrs1.length-1];
+            String[] imgTypes=new String[]{"jpg","jpeg","png","gif"};
+            if(Arrays.asList(imgTypes).contains(suffix))
+            {
+                //如果是图片需要删除图片封面
+                String thumbFilePath=arrs1[0]+"_thumb."+suffix;
+                File f1 = new File(thumbFilePath);
+                if (f1.exists()) {
+                    f1.delete();
+                }
+            }
+
         } else if (domain == 5) {
             //火山云
             TosEntity tosEntity = JSON.toJavaObject(JSONObject.parseObject(set.getTos()), TosEntity.class);

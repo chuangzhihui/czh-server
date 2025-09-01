@@ -3,7 +3,6 @@ package com.czh.service.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.czh.service.dto.admin.GetFileListDto;
 import com.czh.service.entity.UploadFiles;
-import com.czh.service.vo.admin.GetFileListVo;
 import com.czh.service.vo.admin.UploadLog;
 import com.github.pagehelper.PageInfo;
 
@@ -20,7 +19,7 @@ public interface UploadFilesService extends IService<UploadFiles> {
 
     void removeFileById(Integer id);
 
-    PageInfo<GetFileListVo> getFileList(GetFileListDto req);
+    PageInfo<UploadFiles> getFileList(GetFileListDto req);
 
     List<UploadLog> getImgList();
 }

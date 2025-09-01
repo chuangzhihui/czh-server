@@ -9,7 +9,6 @@ import com.czh.service.entity.UploadFiles;
 import com.czh.service.service.AsyncService;
 import com.czh.service.service.UploadFilesService;
 import com.czh.service.service.UploadSetService;
-import com.czh.service.vo.admin.GetFileListVo;
 import com.czh.service.vo.admin.UploadLog;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -55,9 +54,9 @@ public class UploadFilesServiceImpl extends ServiceImpl<UploadFilesDao,UploadFil
     }
 
     @Override
-    public PageInfo<GetFileListVo> getFileList(GetFileListDto req) {
+    public PageInfo<UploadFiles> getFileList(GetFileListDto req) {
         PageHelper.startPage(req.getPage(),req.getSize(),"atime desc");
-        List<GetFileListVo> vos=baseMapper.selectByPid(req);
+        List<UploadFiles> vos=baseMapper.selectByPid(req);
         return new PageInfo<>(vos);
     }
 

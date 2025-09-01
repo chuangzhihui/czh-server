@@ -16,4 +16,8 @@ public class LocalUploadVo {
      * 文件key
      */
     private String key;
+    /**
+     * 图片或者文本的缩略图
+     */
+    private String thumb;
 }
