@@ -41,6 +41,11 @@ public class AdminActionLogServiceImpl implements AdminActionLogService {
         if (req.getDesc() != null && !req.getDesc().isEmpty()) {
             criteria.add(Criteria.where("operation").regex(".*?\\"+req.getDesc()+".*"));
         }
+
+        if(req.getStime()!=null && !req.getStime().isEmpty())
+        {
+            criteria.add(Criteria.where("createTime").gte(req.getStime()).lte(req.getEtime()));
+        }
         return mongoUtil.queryPage(criteria, pageRequest, AdminActionLog.class);
     }
 }

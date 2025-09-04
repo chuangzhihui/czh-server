@@ -9,4 +9,6 @@ public class AdminLogDto extends PageDto {
     private Integer adminId;
     private String address;
     private String ip;
+    private String stime;
+    private String etime;
 }

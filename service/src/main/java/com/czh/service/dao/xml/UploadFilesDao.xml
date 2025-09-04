@@ -22,8 +22,9 @@
             <if test="name!=null and name!=''">
                 and name like concat('%',#{name},'%')
             </if>
-            <if test="type!=null and type>0">
-                and (type=#{type} or type=8)
+
+            <if test="types!=null and types!=''">
+                and (find_in_set(type,#{types}) or type=8)
             </if>
         </where>
     </select>

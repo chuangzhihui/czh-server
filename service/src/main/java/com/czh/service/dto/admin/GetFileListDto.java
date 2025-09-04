@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class GetFileListDto extends PageDto {
     private String name;
-    private int type;
+    private String types;//查询哪些文件多个逗号隔开
     private int pid;
 }
