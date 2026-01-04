@@ -1,6 +1,7 @@
 package com.czh.service.dto.admin;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -17,5 +18,7 @@ public class EditAdminDto {
 
     private String password;
     @Length(min = 4,max = 12,message = "账号格式错误,为4-12位")
+    @NotBlank
+    @NotNull
     private String userName;
 }

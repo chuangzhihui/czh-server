@@ -35,9 +35,6 @@ public class DbBackUpController extends BaseController {
     @RequestMapping("/backUpDb")
     @Log(operation = "备份数据库")
     public JSONResult<EmptyVo> backUpDb() throws InterruptedException {
-
-
-
         AdminDetails adminDetails = (AdminDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         dbBackupService.backup(adminDetails.getAdminId());
         return JSONResult.success();

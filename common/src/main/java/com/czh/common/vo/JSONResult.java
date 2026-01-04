@@ -39,7 +39,7 @@ public  class JSONResult<T>  implements Serializable {
 
     public static <T> JSONResult<T> error(String msg,T data){
         JSONResult<T> res=new JSONResult<>();
-        res.code=1;
+        res.code=500;
         res.msg=msg;
         res.data=data;
         return res;

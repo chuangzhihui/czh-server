@@ -13,12 +13,18 @@ import java.io.Serializable;
 @Getter
 public class AdminLoginDto implements Serializable {
     @Length(min = 6,max = 12,message = "账号格式错误")
-    private String username;
-    @Length(min = 6,max = 16,message = "密码格式错误")
-    private String password;
-    @Length(min = 4,max = 4,message = "图形验证码错误")
-    private String code;
     @NotNull
     @NotBlank
-    private String uuid;
+    private String username;//用户名
+    @Length(min = 6,max = 16,message = "密码格式错误")
+    @NotNull
+    @NotBlank
+    private String password;//密码
+    @Length(min = 4,max = 4,message = "图形验证码错误")
+    @NotNull
+    @NotBlank
+    private String code;//图形验证码
+    @NotNull
+    @NotBlank
+    private String uuid;//图形验证码标识
 }
