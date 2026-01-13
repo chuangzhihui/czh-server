@@ -1,10 +1,10 @@
 #测试环境
 server:
-  port: 18093
+  port: 8081
 spring:
   #sql
   sql:
-    host: 127.0.0.1
+    host: 192.168.1.168
     dbname: jichu
     port: 3306
     username: jichu
@@ -12,7 +12,7 @@ spring:
   #mongoDB
   data:
     mongodb:
-      host: 127.0.0.1
+      host: 192.168.1.168
       port: 27017
       username: demo
       password: sEBc3Fs7Thy8NGMR
