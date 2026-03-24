@@ -24,7 +24,6 @@ import com.czh.service.vo.admin.GetSettingListVo;
 import com.czh.service.vo.admin.GetUploadConfigVo;
 import com.czh.service.vo.admin.GetUploadTokenVo;
 import com.github.pagehelper.PageInfo;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
@@ -240,8 +239,8 @@ public class SettingController extends BaseController {
      */
     @RequestMapping("/getUploadToken")
     @Permission(required = false)
-    public JSONResult<GetUploadTokenVo> getUploadToken(HttpServletRequest request){
-        GetUploadTokenVo vo=uploadSetService.getUploadToken(request);
+    public JSONResult<GetUploadTokenVo> getUploadToken(){
+        GetUploadTokenVo vo=uploadSetService.getUploadToken();
         return JSONResult.success(vo);
     }
 

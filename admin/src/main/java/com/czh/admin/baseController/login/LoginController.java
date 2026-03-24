@@ -78,8 +78,7 @@ public class LoginController extends BaseController {
                 return JSONResult.error("登录异常!");
             }
             AdminDetails admin = (AdminDetails) auth.getPrincipal();
-            String ua=request.getHeader("User-Agent");
-            String token = JWTUtil.getJWTToken(admin.getAdminId().toString(),admin.getPassword(), RequestUtil.getIp(),ua);
+            String token = JWTUtil.getJWTToken(admin.getAdminId().toString(),admin.getPassword(), RequestUtil.getIp());
             AdminLoginVo vo=new AdminLoginVo(admin.getAvatar(),admin.getUsername(),token);
             redis.setEx("adminToken_"+admin.getAdminId(),token,authConfig.getTimeOut(), TimeUnit.SECONDS);
             return JSONResult.success(vo);
@@ -130,8 +129,8 @@ public class LoginController extends BaseController {
      * @return
      */
     @RequestMapping("/getUploadToken")
-    public JSONResult<GetUploadTokenVo> getUploadToken(HttpServletRequest request){
-        GetUploadTokenVo vo=uploadSetService.getUploadToken(request);
+    public JSONResult<GetUploadTokenVo> getUploadToken(){
+        GetUploadTokenVo vo=uploadSetService.getUploadToken();
         return JSONResult.success(vo);
     }
 

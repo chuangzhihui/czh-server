@@ -30,14 +30,14 @@ public class UploadSetServiceImpl extends ServiceImpl<UploadSetDao,UploadSet> im
     UploadSetService uploadSetService;
 
     @Override
-    public GetUploadTokenVo getUploadToken(HttpServletRequest request) {
+    public GetUploadTokenVo getUploadToken() {
         UploadSet set=uploadSetService.getById(1);
         if(set==null || set.getLocal()==null || set.getLocal().isEmpty() || set.getVisible().equals(0)){
             throw new ErrorException("未配置上传信息!");
         }
         LocalUploadConfig localUploadConfig= JSON.toJavaObject(JSONObject.parseObject(set.getLocal()),LocalUploadConfig.class);
         GetUploadTokenVo vo = new GetUploadTokenVo();
-        String token = JWTUtil.getJWTToken("userGetUploadToken","userGetUploadToken", RequestUtil.getIp(),request.getHeader("user-agent"));
+        String token = JWTUtil.getJWTToken("userGetUploadToken","userGetUploadToken", RequestUtil.getIp());
         vo.setToken(token);
         vo.setHost(localUploadConfig.getHost());
         return vo;

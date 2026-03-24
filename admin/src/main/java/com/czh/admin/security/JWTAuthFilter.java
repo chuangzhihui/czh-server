@@ -140,12 +140,12 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         try {
             String audience = JWT.decode(token).getAudience().get(0);
             String ip=JWT.decode(token).getClaim("ip").asString();
-            String ua=JWT.decode(token).getClaim("ua").asString();
-            String requestUA=request.getHeader("user-agent");
-            if(!audience.equals("userGetUploadToken") || !RequestUtil.getIp().equals(ip) || !ua.equals(requestUA)){
+
+            if(!audience.equals("userGetUploadToken") || !RequestUtil.getIp().equals(ip)){
                 throw new ErrorException("token错误");
             }
         } catch (Throwable  j) {
+            j.printStackTrace();
             throw new ErrorException("token错误或者过期");
         }
     }
