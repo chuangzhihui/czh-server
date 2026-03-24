@@ -46,12 +46,10 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.error("JWTAuthFilter{}",request.getRequestURI());
+        log.error("JWTAuthFilter{}",request.getHeader("user-agent"));
         String uri=request.getRequestURI();
         if(uri.equals("/upload")){
-            String uptoken=request.getHeader("token");// 从 http 请求头中取出 token
-            if(uptoken==null || !redisUtil.hasKey(uptoken)){
-                throw new ErrorException("token校验失败!");
-            }
+            checkUploadToken(request);
         }else{
             String token=request.getHeader("token");// 从 http 请求头中取出 token
             if(token!=null && !token.equals("false") && !token.isEmpty()){
@@ -61,8 +59,10 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                 try {
                     adminId = Integer.parseInt(JWT.decode(token).getAudience().get(0));
                     ip=JWT.decode(token).getClaim("ip").asString();
+                    String ua=JWT.decode(token).getClaim("ua").asString();
+                    String requestUA=request.getHeader("user-agent");
                     String redisToken=redisUtil.get("adminToken_"+adminId);
-                    if(RequestUtil.getIp().equals(ip) && redisToken!=null && redisToken.equals(token)){
+                    if(RequestUtil.getIp().equals(ip) && ua.equals(requestUA) && redisToken!=null && redisToken.equals(token)){
                         //查询登录用户
                         Admin admin=adminService.getById(adminId);
                         if(admin!=null){
@@ -124,5 +124,29 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             return new ArrayList<>();
         }
         return adminPermissions;
+    }
+
+    /**
+     * 校验上传token
+     * @param request
+     */
+    private void checkUploadToken(HttpServletRequest request)
+    {
+        String token = request.getHeader("token");
+        if(token==null || token.equals("false") || token.isEmpty())
+        {
+            throw new ErrorException("参数错误");
+        }
+        try {
+            String audience = JWT.decode(token).getAudience().get(0);
+            String ip=JWT.decode(token).getClaim("ip").asString();
+            String ua=JWT.decode(token).getClaim("ua").asString();
+            String requestUA=request.getHeader("user-agent");
+            if(!audience.equals("userGetUploadToken") || !RequestUtil.getIp().equals(ip) || !ua.equals(requestUA)){
+                throw new ErrorException("token错误");
+            }
+        } catch (Throwable  j) {
+            throw new ErrorException("token错误或者过期");
+        }
     }
 }

@@ -21,6 +21,7 @@ import com.czh.service.entity.Setting;
 import com.czh.service.entity.UploadSet;
 import com.czh.service.vo.admin.AdminLoginVo;
 import com.czh.service.vo.admin.GetSystemNameVo;
+import com.czh.service.vo.admin.GetUploadTokenVo;
 import com.czh.service.vo.admin.GetVerifyVo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -84,7 +85,8 @@ public class LoginController extends BaseController {
                 return JSONResult.error("登录异常!");
             }
             AdminDetails admin = (AdminDetails) auth.getPrincipal();
-            String token = JWTUtil.getJWTToken(admin.getAdminId().toString(),admin.getPassword(), RequestUtil.getIp());
+            String ua=request.getHeader("User-Agent");
+            String token = JWTUtil.getJWTToken(admin.getAdminId().toString(),admin.getPassword(), RequestUtil.getIp(),ua);
             AdminLoginVo vo=new AdminLoginVo(admin.getAvatar(),admin.getUsername(),token);
             redis.setEx("adminToken_"+admin.getAdminId(),token,authConfig.getTimeOut(), TimeUnit.SECONDS);
             return JSONResult.success(vo);
@@ -135,9 +137,9 @@ public class LoginController extends BaseController {
      * @return
      */
     @RequestMapping("/getUploadToken")
-    public JSONResult<Map<String,Object>> getUploadToken(){
-        Map<String,Object> config=uploadSetService.getUploadToken();
-        return JSONResult.success(config);
+    public JSONResult<GetUploadTokenVo> getUploadToken(HttpServletRequest request){
+        GetUploadTokenVo vo=uploadSetService.getUploadToken(request);
+        return JSONResult.success(vo);
     }
 
     /**

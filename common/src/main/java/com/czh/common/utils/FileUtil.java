@@ -1,7 +1,11 @@
 package com.czh.common.utils;
 
+import com.czh.common.exception.ErrorException;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -106,5 +110,27 @@ public class FileUtil {
         }
 
     }
-
+    /**
+     * 将MultipartFile转换为临时File对象（推荐）
+     * @param multipartFile 上传的文件
+     * @return 临时File对象
+     * @throws IOException 文件写入失败时抛出
+     */
+    public static File multipartFileToTempFile(MultipartFile multipartFile) throws IOException {
+        // 1. 参数校验
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new ErrorException("MultipartFile不能为空或内容为空");
+        }
+        // 2. 创建临时文件，后缀保留原文件扩展名
+        String originalFilename = multipartFile.getOriginalFilename();
+        String suffix = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+        // 创建临时文件
+        File tempFile = Files.createTempFile("upload_", suffix).toFile();
+        // 3. 将MultipartFile内容写入临时文件
+        multipartFile.transferTo(tempFile);
+        return tempFile;
+    }
 }

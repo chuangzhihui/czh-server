@@ -1,6 +1,9 @@
 package com.czh.common.utils.txCosUtil;
 
 import com.czh.common.exception.ErrorException;
+import com.czh.common.utils.FileUtil;
+import com.czh.common.utils.MediaUtils;
+import com.czh.common.utils.localUploadUtil.entity.LocalUploadVo;
 import com.czh.common.utils.txCosUtil.entity.TxCosEntity;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
@@ -16,8 +19,11 @@ import com.tencent.cloud.CosStsClient;
 import com.tencent.cloud.Response;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,26 +59,64 @@ public class TxCosUtil {
             e.printStackTrace();
         }
     }
-    public  void uploadFile(File file, String key){
+    public LocalUploadVo uploadFile(MultipartFile multipartFile, String key,Integer type){
         // 1 初始化用户身份信息(secretId, secretKey)
         COSCredentials cred = new BasicCOSCredentials(AccessKeyID, AccessKey);
         // 2 设置bucket的区域, COS地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
         ClientConfig clientConfig = new ClientConfig(new Region(bucket));
         // 3 生成cos客户端
         COSClient cosclient = new COSClient(cred, clientConfig);
-        // 这里创建一个空的 ByteArrayInputStream 来作为示例
-
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,key,file);
+        File file=null;
         try {
+            // MultipartFile转临时文件
+            file= FileUtil.multipartFileToTempFile(multipartFile);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,key,file);
             PutObjectResult putObjectResult = cosclient.putObject(putObjectRequest);
             System.out.println(putObjectResult.getRequestId());
+            LocalUploadVo vo=new LocalUploadVo();
+            vo.setName(multipartFile.getOriginalFilename());
+            vo.setUrl(path+"/"+key);
+            vo.setKey(key);
+            long bytes = multipartFile.getSize(); // 获取字节数
+            int sizeInKB = Math.round((float) bytes / 1024);
+            vo.setFileSize(Math.max(sizeInKB, 0));
+            vo.setFileWidth(0);
+            vo.setFileHeight(0);
+            if(type.equals(1))
+            {
+                //图片
+                vo.setThumb(vo.getUrl()+"?imageMogr2/w/300/h/200");
+                BufferedImage bufferedImage= MediaUtils.multipartFileToBufferedImage(multipartFile);
+                if(bufferedImage!=null)
+                {
+                    vo.setFileHeight(bufferedImage.getHeight());
+                    vo.setFileWidth(bufferedImage.getWidth());
+                }
+            }else if(type.equals(2))
+            {
+                //视频
+                vo.setThumb(vo.getUrl()+"?ci-process=snapshot&time=1&format=jpg");
+                //获取视频文件信息
+                MediaUtils.VideoMeta videoMeta=MediaUtils.getVideoMeta(file.getPath());
+                vo.setFileWidth(videoMeta.getWidth());
+                vo.setFileHeight(videoMeta.getHeight());
+                vo.setFileSize((int)videoMeta.getDuration());
+            }
+            return vo;
         } catch (CosServiceException e) {
             e.printStackTrace();
+            throw new ErrorException("上传到腾讯云COS失败");
         } catch (CosClientException e) {
             e.printStackTrace();
-        }finally {
+            throw new ErrorException("上传到腾讯云COS失败");
+        } catch (IOException e) {
+            throw new ErrorException("文件解析失败");
+        } finally {
             // 确认本进程不再使用 cosClient 实例之后，关闭之
             cosclient.shutdown();
+            if(file!=null){
+                file.delete();
+            }
         }
     }
     public Map<String,Object> getTempKey(){

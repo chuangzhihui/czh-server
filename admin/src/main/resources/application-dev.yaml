@@ -5,7 +5,7 @@ server:
 spring:
     #sql
     sql:
-      host: manghe.honghukeji.net
+      host: 192.168.1.168
       dbname: jichu
       port: 3306
       username: jichu
@@ -13,7 +13,7 @@ spring:
     #mongoDB
     data:
       mongodb:
-        host: manghe.honghukeji.net
+        host: 192.168.1.168
         port: 27017
         username: demo
         password: sEBc3Fs7Thy8NGMR

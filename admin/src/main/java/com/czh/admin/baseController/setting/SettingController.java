@@ -11,8 +11,6 @@ import com.czh.common.utils.ValidateUtil;
 import com.czh.common.utils.aliOssUtil.entity.AliOssEntity;
 import com.czh.common.utils.localUploadUtil.entity.LocalUploadConfig;
 import com.czh.common.utils.qiniuUtil.entity.QiniuEntity;
-import com.czh.common.utils.tosUtil.TosUtil;
-import com.czh.common.utils.tosUtil.entity.GetTosSignUrlDto;
 import com.czh.common.utils.tosUtil.entity.TosEntity;
 import com.czh.common.utils.txCosUtil.entity.TxCosEntity;
 import com.czh.common.vo.EmptyVo;
@@ -24,16 +22,19 @@ import com.czh.service.entity.UploadFiles;
 import com.czh.service.entity.UploadSet;
 import com.czh.service.vo.admin.GetSettingListVo;
 import com.czh.service.vo.admin.GetUploadConfigVo;
+import com.czh.service.vo.admin.GetUploadTokenVo;
 import com.github.pagehelper.PageInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 系统设置类
@@ -234,26 +235,16 @@ public class SettingController extends BaseController {
     }
 
     /**
-     * 获取当前的上传配置信息
+     * 获取文件上传token
      * @return
      */
     @RequestMapping("/getUploadToken")
     @Permission(required = false)
-    public JSONResult<Map<String,Object>> getUploadToken(){
-        Map<String,Object> config=uploadSetService.getUploadToken();
-        return JSONResult.success(config);
+    public JSONResult<GetUploadTokenVo> getUploadToken(HttpServletRequest request){
+        GetUploadTokenVo vo=uploadSetService.getUploadToken(request);
+        return JSONResult.success(vo);
     }
-    //获取火山云的签名地址
-    @PostMapping("/getTosSignUrl")
-    @Permission(required = false)
-    public JSONResult<Map<String,Object>>getTosSignUrl(@RequestBody GetTosSignUrlDto req)
-    {
-        UploadSet set=uploadSetService.getById(1);
-        TosEntity tosEntity= JSON.toJavaObject(JSONObject.parseObject(set.getTos()),TosEntity.class);
-        TosUtil tosUtil=new TosUtil(tosEntity);
-        Map<String,Object> map=tosUtil.getUploadUrl(req.getKey());
-        return JSONResult.success(map);
-    }
+
 
     /**
      * 新增文件

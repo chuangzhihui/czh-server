@@ -23,7 +23,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Arrays;
 
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Service
@@ -77,11 +76,18 @@ public class AsyncServiceImpl implements AsyncService {
             }
             String[] arrs1=srcFilePath.split("\\.");
             String suffix=arrs1[arrs1.length-1];
-            String[] imgTypes=new String[]{"jpg","jpeg","png","gif"};
-            if(Arrays.asList(imgTypes).contains(suffix))
+            if(file.getType().equals(1))
             {
                 //如果是图片需要删除图片封面
                 String thumbFilePath=arrs1[0]+"_thumb."+suffix;
+                File f1 = new File(thumbFilePath);
+                if (f1.exists()) {
+                    f1.delete();
+                }
+            }else if(file.getType().equals(2))
+            {
+                //视频需要删除缩略图
+                String thumbFilePath=arrs1[0]+"_thumb.png";
                 File f1 = new File(thumbFilePath);
                 if (f1.exists()) {
                     f1.delete();

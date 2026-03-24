@@ -1,5 +1,9 @@
 package com.czh.common.utils.qiniuUtil;
 
+import com.czh.common.exception.ErrorException;
+import com.czh.common.utils.FileUtil;
+import com.czh.common.utils.MediaUtils;
+import com.czh.common.utils.localUploadUtil.entity.LocalUploadVo;
 import com.czh.common.utils.qiniuUtil.entity.QiniuEntity;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
@@ -11,6 +15,11 @@ import com.qiniu.util.Auth;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 @Slf4j
 @Getter
@@ -37,18 +46,59 @@ public class QiniuUtil {
         return auth.uploadToken(qiniuEntity.getBucket());
     }
     //上传文件
-    public void  uploadFile(byte[] uploadBytes,String key){
+    public LocalUploadVo uploadFile(MultipartFile file, String key,Integer type){
         Configuration cfg=new Configuration(Region.region2());
         UploadManager uploadManager = new UploadManager(cfg);
         String upToken=getToken(key);
-        log.info("上传token:{}",upToken);
+        LocalUploadVo vo=new LocalUploadVo();
+        File tempFile=null;
         try {
+
+            byte[] uploadBytes= file.getBytes();
             Response response = uploadManager.put(uploadBytes, key, upToken);
             //解析上传成功的结果
+            log.info("上传key:{}",key);
             log.info("上传结果:{}",response.bodyString());
+            vo.setName(file.getOriginalFilename());
+            vo.setUrl(qiniuEntity.getDomain()+"/"+key);
+            vo.setKey(key);
+            long bytes = file.getSize(); // 获取字节数
+            int sizeInKB = Math.round((float) bytes / 1024);
+            vo.setFileSize(Math.max(sizeInKB, 0));
+            vo.setFileWidth(0);
+            vo.setFileHeight(0);
+            if(type.equals(1))
+            {
+                //图片
+                vo.setThumb(vo.getUrl()+"?imageView2/1/w/160/h/160/q/50");
+                BufferedImage bufferedImage= MediaUtils.multipartFileToBufferedImage(file);
+                if(bufferedImage!=null)
+                {
+                    vo.setFileHeight(bufferedImage.getHeight());
+                    vo.setFileWidth(bufferedImage.getWidth());
+                }
+            }else if(type.equals(2))
+            {
+                //视频
+                vo.setThumb(vo.getUrl()+"?vframe/jpg/offset/1");
+                tempFile= FileUtil.multipartFileToTempFile(file);//视频文件
+                //获取视频文件信息
+                MediaUtils.VideoMeta videoMeta=MediaUtils.getVideoMeta(tempFile.getPath());
+                vo.setFileWidth(videoMeta.getWidth());
+                vo.setFileHeight(videoMeta.getHeight());
+                vo.setFileSize((int)videoMeta.getDuration());
+            }
+            return vo;
         } catch (QiniuException ex) {
             Response r = ex.response;
             log.error("上传失败:{}",r.toString());
+            throw new ErrorException("上传到七牛云失败!");
+        } catch (IOException e) {
+            throw new ErrorException("文件解析错误!");
+        }finally {
+            if(tempFile!=null){
+                tempFile.delete();
+            }
         }
     }
     //删除文件

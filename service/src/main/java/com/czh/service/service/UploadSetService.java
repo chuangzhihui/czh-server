@@ -2,8 +2,8 @@ package com.czh.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.czh.service.entity.UploadSet;
-
-import java.util.Map;
+import com.czh.service.vo.admin.GetUploadTokenVo;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 文件上传配置(UploadSet)表服务接口
@@ -14,5 +14,5 @@ import java.util.Map;
 public interface UploadSetService extends IService<UploadSet> {
 
 
-    Map<String, Object> getUploadToken();
+    GetUploadTokenVo getUploadToken(HttpServletRequest request);
 }
