@@ -1,7 +1,5 @@
 package com.czh.admin.baseController.login;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.czh.admin.baseController.BaseController;
 import com.czh.admin.security.AdminDetails;
 import com.czh.common.annotation.Log;
@@ -10,15 +8,11 @@ import com.czh.common.utils.DateUtil;
 import com.czh.common.utils.JWTUtil;
 import com.czh.common.utils.RequestUtil;
 import com.czh.common.utils.ValidateCodeUtil;
-import com.czh.common.utils.tosUtil.TosUtil;
-import com.czh.common.utils.tosUtil.entity.GetTosSignUrlDto;
-import com.czh.common.utils.tosUtil.entity.TosEntity;
 import com.czh.common.vo.JSONResult;
 import com.czh.service.dto.admin.AdminLoginDto;
 import com.czh.service.entity.Admin;
 import com.czh.service.entity.AuthConfig;
 import com.czh.service.entity.Setting;
-import com.czh.service.entity.UploadSet;
 import com.czh.service.vo.admin.AdminLoginVo;
 import com.czh.service.vo.admin.GetSystemNameVo;
 import com.czh.service.vo.admin.GetUploadTokenVo;
@@ -35,7 +29,6 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -142,18 +135,4 @@ public class LoginController extends BaseController {
         return JSONResult.success(vo);
     }
 
-    /**
-     * 获取火山云的签名地址
-     * @param req
-     * @return
-     */
-    @PostMapping("/getTosSignUrl")
-    public JSONResult<Map<String,Object>>getTosSignUrl(@RequestBody GetTosSignUrlDto req)
-    {
-        UploadSet set=uploadSetService.getById(1);
-        TosEntity tosEntity= JSON.toJavaObject(JSONObject.parseObject(set.getTos()),TosEntity.class);
-        TosUtil tosUtil=new TosUtil(tosEntity);
-        Map<String,Object> map=tosUtil.getUploadUrl(req.getKey());
-        return JSONResult.success(map);
-    }
 }
