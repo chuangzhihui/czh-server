@@ -59,10 +59,9 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                 try {
                     adminId = Integer.parseInt(JWT.decode(token).getAudience().get(0));
                     ip=JWT.decode(token).getClaim("ip").asString();
-                    String ua=JWT.decode(token).getClaim("ua").asString();
-                    String requestUA=request.getHeader("user-agent");
+
                     String redisToken=redisUtil.get("adminToken_"+adminId);
-                    if(RequestUtil.getIp().equals(ip) && ua.equals(requestUA) && redisToken!=null && redisToken.equals(token)){
+                    if(RequestUtil.getIp().equals(ip)  && redisToken!=null && redisToken.equals(token)){
                         //查询登录用户
                         Admin admin=adminService.getById(adminId);
                         if(admin!=null){
