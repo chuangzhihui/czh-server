@@ -1,9 +1,9 @@
 package com.czh.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.czh.service.dto.admin.GetFileListDto;
+import com.czh.service.dto.admin.base.GetFileListDto;
 import com.czh.service.entity.UploadFiles;
-import com.czh.service.vo.admin.UploadLog;
+import com.czh.service.vo.admin.base.UploadLog;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

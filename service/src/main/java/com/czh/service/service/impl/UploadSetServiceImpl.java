@@ -10,8 +10,7 @@ import com.czh.common.utils.localUploadUtil.entity.LocalUploadConfig;
 import com.czh.service.dao.UploadSetDao;
 import com.czh.service.entity.UploadSet;
 import com.czh.service.service.UploadSetService;
-import com.czh.service.vo.admin.GetUploadTokenVo;
-import jakarta.servlet.http.HttpServletRequest;
+import com.czh.service.vo.admin.base.GetUploadTokenVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class UploadSetServiceImpl extends ServiceImpl<UploadSetDao,UploadSet> im
         }
         LocalUploadConfig localUploadConfig= JSON.toJavaObject(JSONObject.parseObject(set.getLocal()),LocalUploadConfig.class);
         GetUploadTokenVo vo = new GetUploadTokenVo();
-        String token = JWTUtil.getJWTToken("userGetUploadToken","userGetUploadToken", RequestUtil.getIp());
+        String token = JWTUtil.getJWTToken("userGetUploadToken","userGetUploadToken", RequestUtil.getIp(),0);
         vo.setToken(token);
         vo.setHost(localUploadConfig.getHost());
         return vo;

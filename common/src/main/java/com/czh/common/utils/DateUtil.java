@@ -165,4 +165,11 @@ public class DateUtil {
         }
         return -1;
     }
+
+    public static String getAfterTimeStr(int seconds){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, seconds);
+        return sdf.format(calendar.getTime());
+    }
 }

@@ -17,8 +17,8 @@
         <result property="failNum" column="failNum" jdbcType="INTEGER"/>
         <result property="lastChangePwdTime" column="lastChangePwdTime" jdbcType="TIMESTAMP"/>
     </resultMap>
-    <select id="getAdminList" resultType="com.czh.service.vo.admin.AdminListVo"
-            parameterType="com.czh.service.dto.admin.AdminListDto">
+    <select id="getAdminList" resultType="com.czh.service.vo.admin.base.AdminListVo"
+            parameterType="com.czh.service.dto.admin.base.AdminListDto">
         select a.*,b.roleName
         from   czh_admin as a
         inner join czh_role as b on a.roleId=b.roleId

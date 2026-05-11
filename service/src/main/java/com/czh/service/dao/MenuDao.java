@@ -2,9 +2,9 @@ package com.czh.service.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.czh.service.entity.Menu;
-import com.czh.service.vo.admin.AuthMenuVo;
-import com.czh.service.vo.admin.GetMenuListVo;
-import com.czh.service.vo.admin.GetMenusByPidVo;
+import com.czh.service.vo.admin.base.AuthMenuVo;
+import com.czh.service.vo.admin.base.GetMenuListVo;
+import com.czh.service.vo.admin.base.GetMenusByPidVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

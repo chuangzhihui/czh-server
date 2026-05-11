@@ -13,7 +13,7 @@
         <result property="pid" column="pid" jdbcType="INTEGER"/>
     </resultMap>
     <select id="selectByPid" resultType="com.czh.service.entity.UploadFiles"
-            parameterType="com.czh.service.dto.admin.GetFileListDto">
+            parameterType="com.czh.service.dto.admin.base.GetFileListDto">
         select * from czh_upload_files
         <where>
             <if test="pid!=null">
@@ -28,7 +28,7 @@
             </if>
         </where>
     </select>
-    <select id="getImgList" resultType="com.czh.service.vo.admin.UploadLog">
+    <select id="getImgList" resultType="com.czh.service.vo.admin.base.UploadLog">
         select id,type as file_type, domain  as type,name as file_name,url,atime from czh_upload_files where type=1
     </select>
 

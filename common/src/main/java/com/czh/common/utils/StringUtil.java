@@ -1,5 +1,11 @@
 package com.czh.common.utils;
 
+import com.czh.common.exception.ErrorException;
+import com.czh.common.vo.ParseIdCardVo;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,4 +92,79 @@ public class StringUtil {
         }
         return result;
     }
+
+
+     /* 从逗号分隔的字符串中删除指定元素，保持原格式（逗号分隔）
+            * @param original 原始字符串，例如 "a,b,c,d"
+            * @param toRemove 要删除的元素，例如 "b"
+            * @return 删除后的新字符串，例如 "a,c,d"
+            */
+    public static String removeElement(String original, String toRemove) {
+        // 1. 空值安全处理
+        if (original == null || original.isEmpty()) {
+            return original;
+        }
+
+        // 2. 按逗号分割成数组
+        String[] elements = original.split(",");
+
+        // 3. 用 StringBuilder 拼接结果
+        StringBuilder sb = new StringBuilder();
+
+        // 4. 遍历数组，跳过要删除的元素
+        for (String elem : elements) {
+            // 不匹配要删除的元素，才加入结果
+            if (!elem.equals(toRemove)) {
+                if (!sb.isEmpty()) {
+                    sb.append(","); // 不是第一个元素，先加逗号
+                }
+                sb.append(elem);
+            }
+        }
+
+        // 5. 返回最终字符串
+        return sb.toString();
+    }
+
+    /**
+     * 解析身份证，返回 ParseIdCardVo 对象
+     * @param idCard 15位 或 18位身份证号
+     * @return ParseIdCardVo
+     */
+    public static ParseIdCardVo parseIdCard(String idCard)  {
+        ParseIdCardVo vo = new ParseIdCardVo();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String ID_CARD_REGEX = "(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)";
+        // 正则校验身份证格式
+        if (idCard == null || !Pattern.matches(ID_CARD_REGEX, idCard)) {
+            throw new IllegalArgumentException("身份证号码格式不正确");
+        }
+
+        String birthStr;
+        int genderNum;
+
+        if (idCard.length() == 18) {
+            // 18位身份证
+            birthStr = idCard.substring(6, 14);
+            genderNum = idCard.charAt(16) - '0';
+        } else {
+            // 15位身份证，补19开头
+            birthStr = "19" + idCard.substring(6, 12);
+            genderNum = idCard.charAt(14) - '0';
+        }
+
+        // 生日：字符串转 Date
+        Date birthday = null;
+        try {
+            birthday = sdf.parse(birthStr);
+        } catch (ParseException e) {
+            throw new ErrorException("身份证解析失败");
+        }
+        vo.setBirthday(birthday);
+
+        // 性别：1男 0女
+        vo.setSex(genderNum % 2 == 1 ? 1 : 0);
+        return vo;
+    }
+
 }

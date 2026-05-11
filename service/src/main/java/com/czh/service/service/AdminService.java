@@ -2,9 +2,9 @@ package com.czh.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.czh.common.vo.SelectVo;
-import com.czh.service.dto.admin.AdminListDto;
+import com.czh.service.dto.admin.base.AdminListDto;
 import com.czh.service.entity.Admin;
-import com.czh.service.vo.admin.AdminListVo;
+import com.czh.service.vo.admin.base.AdminListVo;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

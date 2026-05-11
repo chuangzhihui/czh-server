@@ -2,7 +2,7 @@ package com.czh.service.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.czh.service.entity.Setting;
-import com.czh.service.vo.admin.GetSettingListVo;
+import com.czh.service.vo.admin.base.GetSettingListVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

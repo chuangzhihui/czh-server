@@ -9,7 +9,7 @@
         <result property="value" column="value" jdbcType="VARCHAR"/>
         <result property="canDel" column="canDel" jdbcType="INTEGER"/>
     </resultMap>
-    <select id="getSettingList" resultType="com.czh.service.vo.admin.GetSettingListVo">
+    <select id="getSettingList" resultType="com.czh.service.vo.admin.base.GetSettingListVo">
         select * from czh_setting
     </select>
 

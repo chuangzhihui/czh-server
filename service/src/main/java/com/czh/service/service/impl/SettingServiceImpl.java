@@ -4,7 +4,7 @@ import com.czh.common.dto.PageDto;
 import com.czh.service.entity.Setting;
 import com.czh.service.dao.SettingDao;
 import com.czh.service.service.SettingService;
-import com.czh.service.vo.admin.GetSettingListVo;
+import com.czh.service.vo.admin.base.GetSettingListVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;

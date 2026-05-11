@@ -12,8 +12,8 @@ import com.czh.service.entity.Menu;
 import com.czh.service.entity.Role;
 import com.czh.service.service.MenuService;
 import com.czh.service.service.RoleService;
-import com.czh.service.vo.admin.AddRoleGetMenusVo;
-import com.czh.service.vo.admin.GetMenusByPidVo;
+import com.czh.service.vo.admin.base.AddRoleGetMenusVo;
+import com.czh.service.vo.admin.base.GetMenusByPidVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,9 +74,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao,Role> implements RoleSe
        String redisKey="rolePermission"+role.getRoleId();
         List<String> permissions=new ArrayList<>();
         String rolePermissions=redisUtil.get(redisKey);
-       if(redisUtil.hasKey(redisKey) && rolePermissions!=null && !rolePermissions.isEmpty()){
-           permissions= JSON.parseArray(rolePermissions,String.class);
-       }else{
+//       if(redisUtil.hasKey(redisKey) && rolePermissions!=null && !rolePermissions.isEmpty()){
+//           permissions= JSON.parseArray(rolePermissions,String.class);
+//       }else{
            ObjectMapper mapper = new ObjectMapper();
            List<Integer> ids= new ArrayList<>();
            try {
@@ -96,7 +96,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao,Role> implements RoleSe
            }
            String cache=JSON.toJSONString(permissions);
            redisUtil.set(redisKey,cache);
-       }
+//       }
         return permissions;
     }
     //更新角色权限缓存

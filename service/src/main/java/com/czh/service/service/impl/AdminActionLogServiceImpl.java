@@ -1,7 +1,7 @@
 package com.czh.service.service.impl;
 
 import com.czh.common.utils.mongoUtil.MongoUtil;
-import com.czh.service.dto.admin.AdminLogDto;
+import com.czh.service.dto.admin.base.AdminLogDto;
 import com.czh.service.entity.AdminActionLog;
 import com.czh.service.repository.AdminActionLogRepository;
 import com.czh.service.service.AdminActionLogService;

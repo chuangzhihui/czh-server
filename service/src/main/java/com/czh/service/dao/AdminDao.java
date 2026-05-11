@@ -2,9 +2,9 @@ package com.czh.service.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.czh.common.vo.SelectVo;
-import com.czh.service.dto.admin.AdminListDto;
+import com.czh.service.dto.admin.base.AdminListDto;
 import com.czh.service.entity.Admin;
-import com.czh.service.vo.admin.AdminListVo;
+import com.czh.service.vo.admin.base.AdminListVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

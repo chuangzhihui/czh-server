@@ -10,8 +10,8 @@
         <result property="fileSize" column="fileSize" jdbcType="INTEGER"/>
         <result property="atime" column="atime" jdbcType="TIMESTAMP"/>
     </resultMap>
-    <select id="getList" resultType="com.czh.service.vo.admin.DbBackupVo"
-            parameterType="com.czh.service.dto.admin.DbBackUpListDto">
+    <select id="getList" resultType="com.czh.service.vo.admin.base.DbBackupVo"
+            parameterType="com.czh.service.dto.admin.base.DbBackUpListDto">
         select a.*,ifnull(b.userName,"-") as adminName from czh_db_backup as a
         left join czh_admin as b on a.adminId=b.adminId
         <where>

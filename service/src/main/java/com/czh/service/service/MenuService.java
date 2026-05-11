@@ -2,11 +2,11 @@ package com.czh.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.czh.common.dto.PageDto;
-import com.czh.service.dto.admin.EditMenuDto;
+import com.czh.service.dto.admin.base.EditMenuDto;
 import com.czh.service.entity.Menu;
-import com.czh.service.vo.admin.AuthMenuVo;
-import com.czh.service.vo.admin.GetMenuListVo;
-import com.czh.service.vo.admin.GetMenusByPidVo;
+import com.czh.service.vo.admin.base.AuthMenuVo;
+import com.czh.service.vo.admin.base.GetMenuListVo;
+import com.czh.service.vo.admin.base.GetMenusByPidVo;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

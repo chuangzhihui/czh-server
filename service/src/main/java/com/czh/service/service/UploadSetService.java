@@ -2,7 +2,7 @@ package com.czh.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.czh.service.entity.UploadSet;
-import com.czh.service.vo.admin.GetUploadTokenVo;
+import com.czh.service.vo.admin.base.GetUploadTokenVo;
 
 /**
  * 文件上传配置(UploadSet)表服务接口

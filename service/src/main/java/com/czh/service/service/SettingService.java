@@ -3,7 +3,7 @@ package com.czh.service.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.czh.common.dto.PageDto;
 import com.czh.service.entity.Setting;
-import com.czh.service.vo.admin.GetSettingListVo;
+import com.czh.service.vo.admin.base.GetSettingListVo;
 import com.github.pagehelper.PageInfo;
 
 /**

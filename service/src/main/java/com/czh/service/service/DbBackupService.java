@@ -1,9 +1,9 @@
 package com.czh.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.czh.service.dto.admin.DbBackUpListDto;
+import com.czh.service.dto.admin.base.DbBackUpListDto;
 import com.czh.service.entity.DbBackup;
-import com.czh.service.vo.admin.DbBackupVo;
+import com.czh.service.vo.admin.base.DbBackupVo;
 import com.github.pagehelper.PageInfo;
 
 /**

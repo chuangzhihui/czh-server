@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.czh.common.dto.PageDto;
 import com.czh.common.vo.SelectVo;
 import com.czh.service.entity.Role;
-import com.czh.service.vo.admin.AddRoleGetMenusVo;
+import com.czh.service.vo.admin.base.AddRoleGetMenusVo;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;

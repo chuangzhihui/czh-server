@@ -10,15 +10,16 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>admin</artifactId>
-    <version>${revision}}</version>
+    <version>${revision}</version>
     <name>admin</name>
     <description>管理后台模块</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>admin-system</module>
+        <module>admin-base</module>
+        <module>admin-recruit</module>
+    </modules>
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.czh</groupId>
@@ -27,57 +28,5 @@
         </dependency>
 
     </dependencies>
-
-    <build>
-        <finalName>CZH_admin</finalName>
-        <resources>
-            <!-- maven打jar包时没有将resources编译，在此指定进行编译 -->
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-                <!-- http://maven.apache.org/plugins/maven-resources-plugin/examples/resource-directory.html -->
-                <!--<filtering>false</filtering>-->
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${springboot.version}</version>
-                <!--                正确打包本地加密jar包，不可删除-->
-                <configuration>
-                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
-                    <includeSystemScope>true</includeSystemScope>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
-            <!--添加配置跳过测试-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.1</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

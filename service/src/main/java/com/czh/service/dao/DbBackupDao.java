@@ -1,9 +1,9 @@
 package com.czh.service.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.czh.service.dto.admin.DbBackUpListDto;
+import com.czh.service.dto.admin.base.DbBackUpListDto;
 import com.czh.service.entity.DbBackup;
-import com.czh.service.vo.admin.DbBackupVo;
+import com.czh.service.vo.admin.base.DbBackupVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
