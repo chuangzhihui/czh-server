@@ -128,6 +128,35 @@ public class SettingController extends BaseController {
         return uploadSetService.getBaseMapper().selectById(1);
     }
 
+    /**
+     * 把前端回传的「本渠道开关」换算成库里的「全局启用渠道」列值。
+     * <p>
+     * 前端保存时回传的 visible 只表示<b>当前渠道的开关状态</b>：渠道编号=启用本渠道，0=关闭本渠道；
+     * 而库里的 visible 是全局单选列（0 未选用 1 七牛 2 阿里 3 腾讯 4 本地 5 火山云）。
+     * 若把前端的 0 直接写库，就会出现「本地开关本就关着 → 保存本地配置 → 腾讯云的启用态被清零」的事故。
+     * 换算规则：
+     * <ul>
+     *   <li>启用本渠道 → 直接写渠道编号（单选语义，自然顶掉其它渠道）；</li>
+     *   <li>关闭本渠道且本渠道正是当前启用项 → 写 0；</li>
+     *   <li>关闭本渠道但本渠道本就未启用 → 沿用库里已有的全局选用，不动其它渠道的启用态。</li>
+     * </ul>
+     *
+     * @param exists       库中已有配置（可为 null）
+     * @param reqVisible   前端回传的 visible（渠道编号或 0）
+     * @param channelValue 当前保存端点对应的渠道编号
+     * @return 应写库的全局 visible 列值
+     */
+    private Integer resolveVisible(UploadSet exists,Integer reqVisible,int channelValue){
+        Integer current=exists==null?null:exists.getVisible();
+        if(reqVisible!=null && reqVisible==channelValue){
+            return channelValue;
+        }
+        if(current!=null && current==channelValue){
+            return 0;
+        }
+        return current;
+    }
+
 
     /**
      * 保存七牛配置
@@ -154,7 +183,7 @@ public class SettingController extends BaseController {
         String qiniu=JSON.toJSONString(qiniuEntity);
         UploadSet uploadSet=new UploadSet();
         uploadSet.setId(1);
-        uploadSet.setVisible(req.getVisible());
+        uploadSet.setVisible(resolveVisible(exists,req.getVisible(),1));
         uploadSet.setQiniu(qiniu);
         if(uploadSetService.updateById(uploadSet)){
             return JSONResult.success();
@@ -186,7 +215,7 @@ public class SettingController extends BaseController {
         String alioss=JSON.toJSONString(aliOssEntity);
         UploadSet uploadSet=new UploadSet();
         uploadSet.setId(1);
-        uploadSet.setVisible(req.getVisible());
+        uploadSet.setVisible(resolveVisible(exists,req.getVisible(),2));
         uploadSet.setAlioss(alioss);
         if(uploadSetService.updateById(uploadSet)){
             return JSONResult.success();
@@ -218,7 +247,7 @@ public class SettingController extends BaseController {
         String txcos=JSON.toJSONString(txCosEntity);
         UploadSet uploadSet=new UploadSet();
         uploadSet.setId(1);
-        uploadSet.setVisible(req.getVisible());
+        uploadSet.setVisible(resolveVisible(exists,req.getVisible(),3));
         uploadSet.setTxcos(txcos);
         if(uploadSetService.updateById(uploadSet)){
             return JSONResult.success();
@@ -237,9 +266,10 @@ public class SettingController extends BaseController {
     {
         LocalUploadConfig localUploadConfig=(LocalUploadConfig) dto;
         String local=JSON.toJSONString(localUploadConfig);
+        UploadSet exists=getExistsUploadSet();
         UploadSet uploadSet=new UploadSet();
         uploadSet.setId(1);
-        uploadSet.setVisible(dto.getVisible());
+        uploadSet.setVisible(resolveVisible(exists,dto.getVisible(),4));
         uploadSet.setLocal(local);
         if(uploadSetService.updateById(uploadSet)){
             return JSONResult.success();
@@ -272,7 +302,7 @@ public class SettingController extends BaseController {
         String tos=JSON.toJSONString(tosEntity);
         UploadSet uploadSet=new UploadSet();
         uploadSet.setId(1);
-        uploadSet.setVisible(dto.getVisible());
+        uploadSet.setVisible(resolveVisible(exists,dto.getVisible(),5));
         uploadSet.setTos(tos);
         if(uploadSetService.updateById(uploadSet)){
             return JSONResult.success();

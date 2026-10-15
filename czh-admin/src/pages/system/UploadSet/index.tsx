@@ -139,6 +139,8 @@ const Index = (_props: any, ref: any) => {
         const obj: any = data[key];
         const channel = CHANNELS.find(ch => ch.key === key);
         if (!channel) return message.error('配置错误');
+        // visible 回传语义是「本渠道开关」：渠道编号=启用本渠道，0=关闭本渠道；
+        // 后端据此换算全局选用列，开关未动时不会误关其它渠道，此处不得改传全局值
         obj.visible = obj.visible ? channel.visibleValue : 0;
         channel.save(obj).then((res: any) => {
             if (res.code === 200) {

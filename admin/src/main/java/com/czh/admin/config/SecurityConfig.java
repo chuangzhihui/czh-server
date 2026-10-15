@@ -77,7 +77,7 @@ public class SecurityConfig {
                         // 拿到 getUploadToken 下发的短期令牌后直接打 /upload，不走登录态）。
                         // 但"匿名"不等于"不校验"，它的唯一关卡是 JWTAuthFilter#checkUploadToken：
                         //   · 真验签（密钥来自 czh.upload-token.secret，不再是源码常量）—— BE-04；
-                        //   · 令牌 600 秒短期有效 + 绑定签发时的 IP；
+                        //   · 令牌 600 秒短期有效（不再绑定签发 IP：取 token 与 /upload 可能走不同入口，绑定会误杀）；
                         //   · 校验失败直接写 401 响应，不再被 /error 抹成 404 —— BE-29。
                         // 已修（BE-07）：扩展名白名单统一收口在 UploadController#doUpload（五家分支共用），
                         // 并按 type 分组（图片/视频/Excel/word/pdf/压缩包）；大小限制交由

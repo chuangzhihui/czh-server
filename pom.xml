@@ -7,9 +7,12 @@
         <module>common</module>
         <module>service</module>
         <module>admin</module>
+        <!-- 以下模块在当前工作区不存在，声明会让 Maven/IDEA 同步直接报错（Child module does not exist），
+             导致 IDEA 无法加载项目结构、无法运行 AdminApplication。创建对应目录并补上 pom 后再放开：
         <module>user</module>
         <module>company</module>
         <module>websocket</module>
+        -->
 
     </modules>
     <groupId>com.czh</groupId>

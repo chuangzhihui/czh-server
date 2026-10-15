@@ -156,6 +156,10 @@ public class JWTAuthFilter extends OncePerRequestFilter {
      * 原实现全程 {@code JWT.decode(token)} 只解码不验签，而签名密钥是源码里的字面量常量
      * {@code "userGetUploadToken"}，攻击者本地就能签一张自己的令牌。现改为
      * {@link JWTUtil#verify(String, String)} 验签，密钥来自配置项 {@code czh.upload-token.secret}。
+     * <p>
+     * 说明：曾要求 token 内 ip claim 与当前请求 IP 一致，已移除——取 token（走 API 地址）
+     * 与 /upload（走 upload_set 配置的 host）可能经过不同入口（127.0.0.1 / 局域网 IP / 反代），
+     * 绑定 IP 会误杀正常上传。防重放由「独立密钥验签 + 600 秒短期有效」承担。
      *
      * @param request  当前请求
      * @param response 校验失败时用于写出响应
@@ -175,9 +179,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             DecodedJWT jwt = JWTUtil.verify(token, uploadTokenSecret);
             List<String> audienceList = jwt.getAudience();
             String audience = (audienceList == null || audienceList.isEmpty()) ? "" : audienceList.get(0);
-            String ip = jwt.getClaim("ip").asString();
 
-            if(!JWTUtil.UPLOAD_TOKEN_AUDIENCE.equals(audience) || !RequestUtil.getIp().equals(ip)){
+            if(!JWTUtil.UPLOAD_TOKEN_AUDIENCE.equals(audience)){
                 log.warn("上传 token 校验失败 audience={} ip={}", audience, RequestUtil.getIp());
                 writeJson(response, 401, "上传凭证无效,请重新获取");
                 return false;
