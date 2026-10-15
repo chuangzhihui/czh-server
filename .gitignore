@@ -46,5 +46,7 @@ node_modules/
 dist/
 coverage/
 
-### 服务端测试目录不入库（本地保留，照常可跑回归） ###
+### 测试目录不入库（本地保留，照常可跑回归） ###
 admin/src/test/
+api/src/test/
+czh-admin/src/test/
