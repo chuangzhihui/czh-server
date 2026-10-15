@@ -1,0 +1,33 @@
+/* 表格操作区：按钮间分隔线与 pubbtnbox 保持一致 */
+.CZHTableAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  > * {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &::after {
+      display: block;
+      content: '';
+      width: 1px;
+      height: 10px;
+      background-color: #ddd;
+      margin: 0 12px;
+    }
+
+    &:last-child::after {
+      display: none;
+    }
+  }
+
+  .CZHTableActionMore {
+    .anticon {
+      font-size: 12px;
+      margin-left: 2px;
+    }
+  }
+}

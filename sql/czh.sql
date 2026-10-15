@@ -24,20 +24,22 @@ DROP TABLE IF EXISTS `czh_admin`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `czh_admin` (
   `adminId` int NOT NULL AUTO_INCREMENT COMMENT '管理员id',
-  `userName` varchar(11) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '用户名',
+  `userName` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
   `password` varchar(60) NOT NULL COMMENT '密码',
-  `lastLoginIp` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '最后登录ip',
+  `lastLoginIp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '最后登录ip',
   `lastLoginTime` datetime DEFAULT NULL COMMENT '最后登录时间',
   `roleId` int NOT NULL COMMENT '角色id',
   `atime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
   `avatar` varchar(255) DEFAULT NULL COMMENT '头像',
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '账号状态 0冻结 1正常',
-  `lastTryLoginIp` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '上次登录失败的IP',
+  `lastTryLoginIp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '上次登录失败的IP',
   `lastTryLoginTime` datetime DEFAULT NULL COMMENT '上次登录失败的时间',
   `failNum` int NOT NULL DEFAULT '0' COMMENT '连续登录失败次数',
   `lastChangePwdTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '上次修改密码的时间',
-  PRIMARY KEY (`adminId`)
-) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb3 COMMENT='管理员表';
+  PRIMARY KEY (`adminId`),
+  UNIQUE KEY `uk_userName` (`userName`),
+  KEY `idx_roleId` (`roleId`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,7 +48,7 @@ CREATE TABLE `czh_admin` (
 
 LOCK TABLES `czh_admin` WRITE;
 /*!40000 ALTER TABLE `czh_admin` DISABLE KEYS */;
-INSERT INTO `czh_admin` VALUES (4,'admin','$2y$10$ABUomhHEkUd6elPeprSfJOusehRpCIWcsiRp.JpERmCVwWtfltiwy','220.192.129.27','2025-06-03 23:18:09',1,'2021-12-12 22:43:58','https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg',1,'127.0.0.1','2026-10-13 10:45:20',1,'2026-10-13 10:45:39');
+INSERT INTO `czh_admin` VALUES (4,'admin','$2y$10$ABUomhHEkUd6elPeprSfJOusehRpCIWcsiRp.JpERmCVwWtfltiwy','220.192.129.27','2025-06-03 23:18:09',1,'2021-12-12 22:43:58','https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg',1,'127.0.0.1','2026-10-13 17:16:34',0,'2026-10-13 10:45:39');
 /*!40000 ALTER TABLE `czh_admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -59,19 +61,19 @@ DROP TABLE IF EXISTS `czh_admin_action_log`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `czh_admin_action_log` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `operation` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '操作名称(@Log注解的operation)',
-  `method` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '操作地址(类名-方法名)',
+  `operation` varchar(255) DEFAULT NULL COMMENT '操作名称(@Log注解的operation)',
+  `method` varchar(255) DEFAULT NULL COMMENT '操作地址(类名-方法名)',
   `createTime` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
-  `userName` varchar(60) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '操作用户(账号)',
+  `userName` varchar(60) DEFAULT NULL COMMENT '操作用户(账号)',
   `adminId` int DEFAULT NULL COMMENT '操作用户ID(管理员adminId)',
-  `params` text COLLATE utf8mb4_general_ci COMMENT '请求参数(JSON字符串)',
-  `ip` varchar(64) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '操作IP',
-  `bake` text COLLATE utf8mb4_general_ci COMMENT '接口返回值(JSON字符串)',
+  `params` text COMMENT '请求参数(JSON字符串)',
+  `ip` varchar(64) DEFAULT NULL COMMENT '操作IP',
+  `bake` text COMMENT '接口返回值(JSON字符串)',
   PRIMARY KEY (`id`),
-  KEY `idx_userID` (`adminId`),
-  KEY `idx_createTime` (`createTime`),
-  KEY `idx_userID_createTime` (`adminId`,`createTime`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='后台管理员操作日志表';
+  KEY `idx_userID_createTime` (`adminId`,`createTime`),
+  KEY `idx_adminId` (`adminId`),
+  KEY `idx_adminId_createTime` (`adminId`,`createTime`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='后台管理员操作日志表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +82,7 @@ CREATE TABLE `czh_admin_action_log` (
 
 LOCK TABLES `czh_admin_action_log` WRITE;
 /*!40000 ALTER TABLE `czh_admin_action_log` DISABLE KEYS */;
-INSERT INTO `czh_admin_action_log` VALUES (1,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 10:56:58','admin',4,'{\"code\":\"3453\",\"password\":\"zx123456\",\"username\":\"admin\",\"uuid\":\"6eff54c0-5659-447d-bee4-7d7795ec1c52\"}','127.0.0.1','{\"code\":200,\"data\":{\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"nickname\":\"admin\",\"token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0IiwiaXAiOiIxMjcuMC4wLjEiLCJleHAiOjE3OTQ0NTIyMTl9.xDms2huN9EqjtvJ0e8DRS6eipZ__Q8LERX6I7vg8Sjo\"},\"msg\":\"操作成功\"}');
+INSERT INTO `czh_admin_action_log` VALUES (1,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 10:56:58','admin',4,'{\"code\":\"3453\",\"password\":\"zx123456\",\"username\":\"admin\",\"uuid\":\"6eff54c0-5659-447d-bee4-7d7795ec1c52\"}','127.0.0.1','{\"code\":200,\"data\":{\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"nickname\":\"admin\",\"token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0IiwiaXAiOiIxMjcuMC4wLjEiLCJleHAiOjE3OTQ0NTIyMTl9.xDms2huN9EqjtvJ0e8DRS6eipZ__Q8LERX6I7vg8Sjo\"},\"msg\":\"操作成功\"}'),(2,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 11:50:02','admin',4,'{\"code\":\"3372\",\"uuid\":\"c7a1dff5-a5ff-495a-a899-13ea62d17c02\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\"}}'),(3,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 17:15:10','admin',4,'{\"password\":\"****\",\"code\":\"8157\",\"uuid\":\"218d643c-8928-487f-83df-35a08b3ae624\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"图形验证码已失效,请点击验证码图片刷新后重试!\",\"code\":500}'),(4,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 17:15:16','admin',4,'{\"password\":\"****\",\"code\":\"2562\",\"uuid\":\"a0096e29-a7d1-489c-8e0f-f08a830273dd\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"用户名或密码错误!\",\"code\":500}'),(5,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 17:15:26','admin',4,'{\"password\":\"****\",\"code\":\"5943\",\"uuid\":\"a9030f39-3187-4d3a-ac08-3bd476075b99\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"用户名或密码错误!\",\"code\":500}'),(6,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 17:15:33','admin',4,'{\"password\":\"****\",\"code\":\"3128\",\"uuid\":\"ab848679-f143-4bb3-b506-c63275b045ee\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"图形验证码错误!\",\"code\":500}'),(7,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 17:15:39','admin',4,'{\"password\":\"****\",\"code\":\"6095\",\"uuid\":\"aaf441cf-c98a-4963-81b0-4a98e2b09caa\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"用户名或密码错误!\",\"code\":500}'),(8,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 17:16:34','admin',4,'{\"password\":\"****\",\"code\":\"8759\",\"uuid\":\"8a488a95-0335-4965-ab3b-53bfab23a543\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"ALERT密码已连续错误4次,再次输入错误将冻结账号!\",\"code\":500}'),(9,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 17:16:47','admin',4,'{\"password\":\"****\",\"code\":\"5216\",\"uuid\":\"1f3fc4cf-2b9b-4165-883e-1f8009c35e13\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(10,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-13 18:32:57','admin',4,'{\"password\":\"****\",\"code\":\"5224\",\"uuid\":\"69d271df-d9c7-493e-b482-3b2ceb8d550e\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(11,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 09:31:06','admin',4,'{\"password\":\"****\",\"code\":\"5290\",\"uuid\":\"e4198edd-9f95-4d2a-b7c3-e6cb05e2dd86\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(12,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 13:27:11','admin',4,'{\"password\":\"****\",\"code\":\"7696\",\"uuid\":\"b7264038-fde6-47e3-ba79-88d577a44584\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(13,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 13:55:58','admin',4,'{\"password\":\"****\",\"code\":\"7851\",\"uuid\":\"88b99867-df59-49eb-b855-25bca876dd8e\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(14,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 14:37:09','admin',4,'{\"password\":\"****\",\"code\":\"1125\",\"uuid\":\"86c682a7-78f9-479c-a4a0-1bd387abef03\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(15,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 18:18:44','admin',4,'{\"password\":\"****\",\"code\":\"1294\",\"uuid\":\"f9aa4c49-f337-49c3-8e71-aa7ff48d2be9\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(16,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 19:41:04','admin',4,'{\"password\":\"****\",\"code\":\"1225\",\"uuid\":\"2f458bbe-3b97-4acb-8eb1-7c1f5c1bd1cb\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"图形验证码错误!\",\"code\":500}'),(17,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 19:41:10','admin',4,'{\"password\":\"****\",\"code\":\"7613\",\"uuid\":\"3f9f30fd-1f4e-44a7-bae6-e72ce4aaad55\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(18,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-14 19:51:57','admin',4,'{\"password\":\"****\",\"code\":\"7398\",\"uuid\":\"28a968fd-78bb-42af-8289-00601d8ed0de\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(19,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-15 08:49:20','admin',4,'{\"password\":\"****\",\"code\":\"8144\",\"uuid\":\"cd369c2c-0c75-4545-b3d5-75254cc8929f\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(20,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-15 09:21:33','admin',4,'{\"password\":\"****\",\"code\":\"9698\",\"uuid\":\"f30121ff-a736-4d5a-84be-8a0b2093ee9d\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}'),(21,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-15 11:14:07','admin',4,'{\"password\":\"****\",\"code\":\"7207\",\"uuid\":\"debefae4-3076-49b8-8e9f-a7b741f0b333\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"图形验证码已失效,请点击验证码图片刷新后重试!\",\"code\":500}'),(22,'账户登录','com.czh.admin.baseController.login.LoginController-login','2026-10-15 11:14:12','admin',4,'{\"password\":\"****\",\"code\":\"7154\",\"uuid\":\"a97d3819-1273-4ac9-ac19-04e159cfeb01\",\"username\":\"admin\"}','127.0.0.1','{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"nickname\":\"admin\",\"avatar\":\"https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg\",\"token\":\"****\"}}');
 /*!40000 ALTER TABLE `czh_admin_action_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,10 +96,11 @@ DROP TABLE IF EXISTS `czh_area`;
 CREATE TABLE `czh_area` (
   `id` int NOT NULL COMMENT '行政区划ID',
   `pid` int NOT NULL COMMENT '上级区划ID',
-  `tree` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '级联树',
-  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL COMMENT '地区名称',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='地区表';
+  `tree` varchar(255) NOT NULL COMMENT '级联树',
+  `name` varchar(32) NOT NULL COMMENT '地区名称',
+  PRIMARY KEY (`id`),
+  KEY `idx_pid` (`pid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='地区表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,7 +133,7 @@ CREATE TABLE `czh_auth_config` (
   `bakupDbCron` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '备份数据得cron表达式',
   `atime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '上次编辑时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='登录安全配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='登录安全配置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -155,10 +158,12 @@ CREATE TABLE `czh_db_backup` (
   `fileName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '备份文件名称',
   `adminId` int NOT NULL COMMENT '备份人',
   `filePath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '备份文件完整路径',
-  `fileSize` int NOT NULL DEFAULT '0' COMMENT '文件大小',
+  `fileSize` bigint NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
   `atime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '备份时间',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='数据库备份记录';
+  PRIMARY KEY (`id`),
+  KEY `idx_atime` (`atime`),
+  KEY `idx_adminId` (`adminId`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='数据库备份记录';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,15 +186,16 @@ DROP TABLE IF EXISTS `czh_menu`;
 CREATE TABLE `czh_menu` (
   `id` int NOT NULL AUTO_INCREMENT,
   `pid` int DEFAULT NULL COMMENT '上级id',
-  `name` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '菜单名称',
-  `path` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '前端路由',
-  `route` varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '后端路由',
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '菜单名称',
+  `path` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '前端路由',
+  `route` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '后端路由',
   `level` tinyint(1) DEFAULT '1' COMMENT '菜单等级',
-  `icon` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '图标',
+  `icon` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '图标',
   `sort` int DEFAULT NULL COMMENT '排序 低到高',
   `display` tinyint(1) DEFAULT '1' COMMENT '是否显示',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=110 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`),
+  KEY `idx_pid` (`pid`)
+) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,7 +204,7 @@ CREATE TABLE `czh_menu` (
 
 LOCK TABLES `czh_menu` WRITE;
 /*!40000 ALTER TABLE `czh_menu` DISABLE KEYS */;
-INSERT INTO `czh_menu` VALUES (1,0,'系统设置','System','',1,'icon-jibenguanli',1,1),(2,1,'角色列表','RoleList','/admin/role/roleList',2,'',2,1),(5,1,'管理员列表','AdminList','/admin/admin/adminList',2,'',1,1),(6,5,'添加管理员','','/admin/admin/addAdmin',3,'',0,0),(9,2,'添加角色','','/admin/role/addRole',3,'',2,0),(10,2,'编辑角色','','/admin/role/editRole',3,'',3,0),(11,2,'删除角色','','/admin/role/delRole',3,'',4,0),(12,5,'编辑管理员','','/admin/admin/editAdmin',3,'',1,0),(13,5,'删除管理员','','/admin/admin/delAdmin',3,'',3,0),(14,1,'操作日志','OperationLog','/admin/admin/adminLog',2,'',6,1),(15,1,'菜单管理','MenuSet','/admin/menu/menuList',2,'',4,1),(16,15,'新增菜单','','/admin/menu/addMenu',3,'',0,0),(17,15,'编辑菜单','','/admin/menu/editMenu',3,'',1,0),(18,15,'删除菜单','','/admin/menu/delMenu',3,'',2,0),(20,1,'上传设置','UploadSet','/admin/setting/getUploadConfig',2,'',5,1),(21,1,'参数配置','BasicInfo','/admin/setting/settingList',2,'',3,1),(22,21,'新增配置','','/admin/setting/addSetting',3,'',1,0),(23,21,'修改配置','','/admin/setting/editSetting',3,'',3,0),(24,21,'删除配置','','/admin/setting/delSetting',3,'',2,0),(25,20,'删除文件','','/admin/setting/delFile',3,'',1,0),(28,5,'冻结/解冻管理员','','/admin/admin/changeAdminStatus',3,'',4,0),(29,1,'登录安全配置','AuthConfig','/admin/setting/setAuthConfig',2,'',7,1),(30,1,'数据库备份','DbBackUp','',2,'',8,1),(31,30,'备份列表','','/admin/backup/getList',3,'',1,0),(32,30,'备份数据','','/admin/backup/backUpDb',3,'',2,0),(33,30,'恢复数据库','','/admin/backup/restoreDb',3,'',3,0),(34,30,'下载备份','','/admin/backup/download',3,'',4,0),(35,30,'删除备份','','/admin/backup/removeBackUpFile',3,'',5,0);
+INSERT INTO `czh_menu` VALUES (1,0,'系统设置','system','',1,'icon-jibenguanli',1,1),(2,1,'角色列表','role/RoleList','/admin/role/roleList',2,'',2,1),(5,1,'管理员列表','admin/AdminList','/admin/admin/adminList',2,'',1,1),(6,5,'添加管理员','','/admin/admin/addAdmin',3,'',0,0),(9,2,'添加角色','','/admin/role/addRole',3,'',2,0),(10,2,'编辑角色','','/admin/role/editRole',3,'',3,0),(11,2,'删除角色','','/admin/role/delRole',3,'',4,0),(12,5,'编辑管理员','','/admin/admin/editAdmin',3,'',1,0),(13,5,'删除管理员','','/admin/admin/delAdmin',3,'',3,0),(14,1,'操作日志','OperationLog','/admin/admin/adminLog',2,'',6,1),(15,1,'菜单管理','menu/MenuSet','/admin/menu/menuList',2,'',4,1),(16,15,'新增菜单','','/admin/menu/addMenu',3,'',0,0),(17,15,'编辑菜单','','/admin/menu/editMenu',3,'',1,0),(18,15,'删除菜单','','/admin/menu/delMenu',3,'',2,0),(20,1,'上传设置','UploadSet','/admin/setting/getUploadConfig',2,'',5,1),(21,1,'参数配置','set/BasicInfo','/admin/setting/settingList',2,'',3,1),(22,21,'新增配置','','/admin/setting/addSetting',3,'',1,0),(23,21,'修改配置','','/admin/setting/editSetting',3,'',3,0),(24,21,'删除配置','','/admin/setting/delSetting',3,'',2,0),(25,20,'删除文件','','/admin/setting/delFile',3,'',1,0),(28,5,'冻结/解冻管理员','','/admin/admin/changeAdminStatus',3,'',4,0),(29,1,'登录安全配置','AuthConfig','/admin/setting/setAuthConfig',2,'',7,1),(30,1,'数据库备份','DbBackUp','',2,'',8,1),(31,30,'备份列表','','/admin/backup/getList',3,'',1,0),(32,30,'备份数据','','/admin/backup/backUpDb',3,'',2,0),(33,30,'恢复数据库','','/admin/backup/restoreDb',3,'',3,0),(34,30,'下载备份','','/admin/backup/download',3,'',4,0),(35,30,'删除备份','','/admin/backup/removeBackUpFile',3,'',5,0);
 /*!40000 ALTER TABLE `czh_menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,12 +217,12 @@ DROP TABLE IF EXISTS `czh_role`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `czh_role` (
   `roleId` int NOT NULL AUTO_INCREMENT,
-  `roleName` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `ids` text NOT NULL,
+  `roleName` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `ids` mediumtext NOT NULL,
   `describe` varchar(255) NOT NULL,
   `atime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`roleId`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb3 COMMENT='管理员角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='管理员角色表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -238,12 +244,12 @@ DROP TABLE IF EXISTS `czh_setting`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `czh_setting` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` char(64) DEFAULT NULL COMMENT '配置标题',
+  `title` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '配置标题',
   `type` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1文本 2数字 3图片 4图文 5开关',
-  `value` text NOT NULL,
+  `value` mediumtext NOT NULL,
   `canDel` tinyint(1) DEFAULT '1' COMMENT '是否允许删除',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3 COMMENT='系统设置表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='系统设置表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,17 +273,19 @@ CREATE TABLE `czh_upload_files` (
   `id` int NOT NULL AUTO_INCREMENT,
   `domain` tinyint(1) DEFAULT '0' COMMENT '文件保存在哪里的 0虚拟文件夹 1七牛 2阿里oss 3腾讯cos',
   `type` tinyint(1) DEFAULT NULL COMMENT '文件类型  1图片 2视频 3 Excel 4 word 5 pdf 6 zip 7 未知类型文件 8文件夹',
-  `name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '文件名称',
-  `key` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '上传到第三方的key',
-  `url` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL COMMENT '文件地址',
-  `atime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '文件名称',
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '上传到第三方的key',
+  `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '文件地址',
+  `atime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `pid` int DEFAULT '0' COMMENT '上级目录ID 顶级目录为0',
   `fileWidth` int NOT NULL DEFAULT '0' COMMENT '图片或者视频宽其它为0',
   `fileHeight` int NOT NULL DEFAULT '0' COMMENT '图片或者视频高其它为0',
-  `fileSize` int NOT NULL DEFAULT '0' COMMENT '文件大小kb',
+  `fileSize` bigint NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
   `thumb` varchar(255) DEFAULT NULL COMMENT '图片的缩略图或者视频的封面图',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=67 DEFAULT CHARSET=latin1 COMMENT='文件库';
+  PRIMARY KEY (`id`),
+  KEY `idx_pid` (`pid`),
+  KEY `idx_type` (`type`)
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件库';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -286,7 +294,7 @@ CREATE TABLE `czh_upload_files` (
 
 LOCK TABLES `czh_upload_files` WRITE;
 /*!40000 ALTER TABLE `czh_upload_files` DISABLE KEYS */;
-INSERT INTO `czh_upload_files` VALUES (66,4,1,'17695772260312921051.jpg','/home/www/java_demo/static/uploads/admin/20260324/17695772260312921051.jpg','https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg',NULL,0,0,0,53,'https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051_thumb.jpg');
+INSERT INTO `czh_upload_files` VALUES (66,4,1,'17695772260312921051.jpg','/home/www/java_demo/static/uploads/admin/20260324/17695772260312921051.jpg','https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051.jpg','2026-10-13 11:42:03',0,0,0,53,'https://java.cqczh.com.cn:10443/uploads/admin/20260324/17695772260312921051_thumb.jpg');
 /*!40000 ALTER TABLE `czh_upload_files` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -299,14 +307,14 @@ DROP TABLE IF EXISTS `czh_upload_set`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `czh_upload_set` (
   `id` int NOT NULL,
-  `qiniu` text,
-  `alioss` text,
-  `txcos` text,
-  `tos` text COMMENT '火山云tos',
-  `local` text COMMENT '本地上传配置',
+  `qiniu` mediumtext,
+  `alioss` mediumtext,
+  `txcos` mediumtext,
+  `tos` mediumtext COMMENT '火山云tos',
+  `local` mediumtext COMMENT '本地上传配置',
   `visible` tinyint(1) NOT NULL COMMENT '选用的哪个 0未选用 1七牛 2阿里 3腾讯   4本地 5 火山云tos',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='文件上传配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件上传配置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -336,4 +344,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-10-13 11:12:53
+-- Dump completed on 2026-10-15 15:57:00

@@ -1,0 +1,64 @@
+.prevContainer{
+    position: relative;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+    .prevImg{
+      width: 100%;
+      height: 100%;
+    }
+    .maskView{
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: none;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .closeIcon{
+      position: absolute;
+      top: -15px;
+      right: -10px;
+      font-size: 24px;
+      z-index: 0;
+      transition: .4s;
+      display: none;
+    }
+}
+.prevContainer:hover{
+  .maskView{
+    display: flex;
+  }
+  .closeIcon{
+    display: block;
+    z-index: 9999;
+  }
+}
+.CZHUploadMedia{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  .item{
+    width: 102px;
+    height: 102px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.02);
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+  }
+  .item:hover{
+    border: 1px dashed #009b6b;
+    .closeIcon{
+      display: block;
+    }
+  }
+}

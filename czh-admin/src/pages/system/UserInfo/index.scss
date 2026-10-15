@@ -1,0 +1,27 @@
+@use "../../../css/variables" as v;
+
+/* ===================================================================
+ * 个人信息私有样式（头像编辑）
+ * =================================================================== */
+
+.editavatar {
+  width: fit-content;
+  margin: 0 auto;
+  text-align: center;
+
+  .avatarImg {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    object-fit: cover;
+    margin: 0 auto 10px;
+  }
+
+  .avatarTip {
+    display: block;
+    font-size: 14px;
+    color: rgba(0, 0, 0, .45);
+    text-align: center;
+  }
+}

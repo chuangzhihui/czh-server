@@ -1,0 +1,130 @@
+@use "../../css/variables" as v;
+
+/* ===================================================================
+ * 登录页私有样式 —— 宽度不再写死 560px / top 负边距
+ * =================================================================== */
+
+.loginPage {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 100vh;
+  padding: 24px 16px;
+  background: #001a33 url('/bigbg.png') center / cover no-repeat;
+  overflow: auto;
+}
+
+.loginBox {
+  width: 100%;
+  max-width: 560px;
+  padding: 48px 40px 64px;
+  position: relative;
+  z-index: 1;
+  border: 2px solid rgba(0, 111, 179, .4);
+  background-color: rgba(0, 41, 81, .55);
+  border-radius: 8px;
+  backdrop-filter: blur(6px);
+
+  @include v.down(sm) { padding: 32px 20px 40px; }
+
+  h1 {
+    font-size: 36px;
+    font-weight: bold;
+    color: #fff;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 56px;
+    line-height: 48px;
+    @include v.down(sm) { font-size: 26px; line-height: 36px; margin-bottom: 40px; }
+  }
+
+  .line {
+    width: 360px;
+    max-width: 100%;
+    height: 24px;
+    position: absolute;
+    left: 0;
+    top: 96px;
+    z-index: -1;
+    @include v.down(sm) { top: 72px; }
+    @include v.up(md) { left: 40px; }
+  }
+
+  .code {
+    flex: 0 0 auto;
+    width: 152px;
+    height: 60px;
+    border-radius: 2px;
+    background-color: #000;
+    margin-left: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    @include v.down(sm) { width: 120px; }
+
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  }
+
+  .ant-input-affix-wrapper {
+    background-color: #1e2a39;
+    border: 0;
+    height: 60px;
+    @include v.down(sm) { height: 52px; }
+
+    .iconfont { font-size: 24px; color: #fff; }
+  }
+
+  .ant-input {
+    background-color: #1e2a39;
+    color: #fff;
+    font-size: 16px;
+    margin-left: 12px;
+    &::placeholder { color: rgba(255, 255, 255, .65); }
+  }
+
+  .dlbtn {
+    margin-top: 48px;
+    width: 100%;
+    line-height: 60px;
+    height: 60px;
+    padding: 0;
+    font-size: 16px;
+    font-weight: bold;
+    @include v.down(sm) { margin-top: 32px; line-height: 52px; height: 52px; }
+  }
+}
+
+/* antd 6 校验错误态会把底色重置为白。注意：affix wrapper 挂的是 ant-input-status-error /
+ * ant-input-outlined（antd 6 不再带 -affix-wrapper- 前缀），cssinjs 样式运行时注入、顺序晚于
+ * 本文件，故此处用作用域受限的 !important 做确定性覆盖：错误只描红边，底色/文字色保持正常态 */
+.loginPage .loginBox {
+  .ant-input-affix-wrapper.ant-input-outlined,
+  .ant-input.ant-input-outlined,
+  .ant-input-affix-wrapper.ant-input-status-error:not(.ant-input-disabled),
+  .ant-input.ant-input-status-error:not(.ant-input-disabled) {
+    background-color: #1e2a39 !important;
+    color: #fff !important;
+
+    &:hover,
+    &:focus,
+    &:focus-within {
+      background-color: #1e2a39 !important;
+      border-color: #ff4d4f;
+    }
+  }
+
+  /* wrapper 内的真实输入元素（含密码框）文字锁定白色，错误态也不例外 */
+  .ant-input-affix-wrapper .ant-input {
+    color: #fff !important;
+    background: transparent !important;
+    caret-color: #fff;
+  }
+
+  /* 密码显隐眼睛图标 → 白色：默认 color 为 var(--ant-color-icon)（深色），
+     在 #001a33 深蓝背景上看不清；图标为 SVG 取 currentColor，改 color 即可 */
+  .ant-input-password-icon {
+    color: #fff !important;
+    &:hover { color: rgba(255, 255, 255, .85) !important; }
+  }
+}

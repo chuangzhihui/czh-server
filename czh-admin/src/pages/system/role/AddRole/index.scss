@@ -1,0 +1,122 @@
+@use "../../../../css/variables" as v;
+
+/* ===================================================================
+ * 新增/编辑角色私有样式（权限勾选）
+ * 结构：一级菜单 = 权限分组卡片（头部全选 + 下方二三级网格）
+ * =================================================================== */
+
+/* 表单头部：角色名称 + 角色描述并排（<576 单列） */
+.flwp {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+  padding: 20px 24px 4px;
+
+  @include v.down(sm) {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px 16px 4px;
+  }
+}
+
+/* 角色权限表单项：去掉底部多余间距，交由权限区自己控制 */
+.ckField {
+  margin-bottom: 0;
+
+  /* label 与权限卡之间留一点呼吸 */
+  .ant-form-item-label { padding-bottom: 4px; }
+}
+
+/* 权限区整体：纵向堆叠分组卡片，限高滚动 */
+.cklist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 120px;
+  max-height: 40vh;
+  overflow: auto;
+  //padding: 12px 24px 16px;
+
+  /* 内容区留白（modal 层已清零，见 CZHModal/index.scss） */
+  @include v.hide-scrollbar;
+
+  @include v.down(sm) {
+    padding: 12px 16px 16px;
+    max-height: 46vh;
+  }
+}
+
+/* 一级权限分组卡片 */
+.ckGroup {
+  border: 1px solid #f0f0f0;
+  border-radius: v.$radius;
+  overflow: hidden;
+  flex: 0 0 auto;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 12px;
+    background-color: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+
+    .ant-checkbox-wrapper {
+      font-weight: 600;
+      color: rgba(0, 0, 0, .88);
+    }
+  }
+
+  /* 二级权限：每项占整行（标题在上，三级 chip 横排 wrap 在下） */
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 14px;
+  }
+}
+
+/* 二级权限项：卡片式 hover 反馈，三级挂在其下方 */
+.ckItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: v.$radius;
+  transition: background-color .2s;
+  min-width: 0;
+
+  &:hover { background-color: #f5f5f5; }
+
+  /* 相邻二级菜单之间增加间隔线 */
+  & + & {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
+  }
+
+  .ant-checkbox + span {
+    color: rgba(0, 0, 0, .88);
+  }
+}
+
+/* 三级权限：横向 flex-wrap，子项chip化与二级形成层级 */
+.ckSub {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+
+  .ant-checkbox-wrapper {
+    font-size: 12px;
+    color: rgba(0, 0, 0, .65);
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    transition: background-color .2s;
+
+    &:hover { background-color: #e8e8e8; }
+  }
+}
+.roleBox{
+
+}

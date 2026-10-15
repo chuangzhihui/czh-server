@@ -1,0 +1,263 @@
+@use "./variables" as v;
+
+/* ===================================================================
+ * 全局唯一入口 main.scss —— 只能由 main.tsx import 一次
+ * 分区：① reset ② 布局骨架 ③ 响应式工具 ④ 通用类（冻结，只减不增） ⑤ antd 覆盖
+ * 页面/组件私有样式请就近建同名 .scss，不要往这里堆
+ * =================================================================== */
+
+/* ========== ① reset ========== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+html { overflow-y: scroll; }
+
+body {
+  margin: 0;
+  font-family: v.$font-family;
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(0, 0, 0, .88);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @include v.hide-scrollbar;
+}
+
+h1, h2, h3, h4, h5, h6, hr, p, blockquote, div,
+dl, dt, dd, ul, ol, li, pre,
+fieldset, legend, button, input, textarea, th, td { margin: 0; padding: 0; }
+
+h1 { font-size: 18px; }
+h2 { font-size: 16px; }
+h3 { font-size: 14px; }
+h4, h5, h6 { font-size: 100%; }
+
+ul, ol { list-style: none; }
+
+a, a:hover, a:active, a:visited, a:link, a:focus {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  background: none;
+  text-decoration: none;
+}
+
+fieldset, img { border: none; }
+
+button, input, select, textarea {
+  background: transparent;
+  font-size: 100%;
+  font-family: inherit;
+}
+
+input, textarea { border: 0; outline: none; background-color: transparent; }
+textarea { resize: none; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+code { font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace; }
+
+img, video, canvas { max-width: 100%; height: auto; }
+
+/* 主题色变量：由 util/ThemeUtil.applyCssVars() 写入，这里只给首屏兜底值 */
+:root {
+  --main-colorPrimary: #009b6b;
+  --main-colorSuccess: #0081ff;
+  --main-colorWarning: #ffb800;
+  --main-colorError: #FF4B24;
+  --main-colorPrimary-soft: #009b6b14;    /* 主色 8% 浅底：菜单/卡片选中态 */
+  --main-colorPrimary-border: #009b6b66;  /* 主色 40% 描边 */
+}
+
+/* ========== ② 布局骨架：全站 flex ========== */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app {                        /* antd <Layout> 外壳：横向 */
+  display: flex;
+  height: 100vh;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app__body {                  /* 右侧纵向区（顶栏 + 内容） */
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app__header {                /* 顶栏固定高度，不参与压缩 */
+  flex: 0 0 v.$header-height;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  background: #fff;
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, .04);
+  @include v.down(md) { padding: 0 12px; gap: 12px; }
+}
+
+.app__content {               /* 内容区纵向：面包屑 + 子路由出口 */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+  overflow: hidden;
+  @include v.down(md) { padding: 4px; }
+}
+
+.app__outlet {                /* 子路由出口（<Outlet/>）：唯一随路由切换的区域 */
+  flex: 1 1 auto;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app__page {                  /* 单个页面容器：白底卡片，自己滚，不外溢 */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: #fff;
+  border-radius: v.$radius;
+}
+
+/* ========== ③ 响应式工具 ========== */
+.only-xl { display: none; @include v.up(xl) { display: flex; } }
+.only-lg { display: none; @include v.up(lg) { display: flex; } }
+.hide-md { @include v.down(md) { display: none !important; } }
+.hide-sm { @include v.down(sm) { display: none !important; } }
+
+/* ========== ④ 通用类（冻结区：只减不增，新样式请就近建 .scss） ========== */
+/* 注意：以下为历史遗留原子类，禁止继续新增 */
+.font12 { font-size: 12px; }
+.font30 { font-size: 30px; }
+.cursor { cursor: pointer; }
+.pointer { cursor: pointer; }
+.center { text-align: center; }
+.color9 { color: rgba(0, 0, 0, .45); }
+.h100 { height: 100%; }
+.bgbai { background-color: #fff; }
+.block { display: block; }
+.link { text-decoration: underline; }
+.borderbai { border-color: #fff; }
+.borderbf6 { border-bottom: 1px solid #f6f6f6; }
+
+.flex { display: flex; align-items: self-start; min-width: 0; }
+.flexCenter { display: flex; align-items: center; min-width: 0; }
+.flexAllCenter { display: flex; align-items: center; justify-content: center; min-width: 0; }
+.flexColumn { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.flwp { display: flex; flex-wrap: wrap; }
+.flex_end { justify-content: flex-end; }
+.flex_auto { height: 0; flex: auto; min-height: 0; }
+.rowFlex { flex: 1; min-width: 0; }
+.marglauto { margin-left: auto; }
+
+.margl24 { margin-left: 24px; }
+.margl12 { margin-left: 12px; }
+.margr24 { margin-right: 24px; }
+.marginr12 { margin-right: 12px; }
+.margb12 { margin-bottom: 12px; }
+.margb20 { margin-bottom: 20px; }
+.marginb8 { margin-bottom: 8px; }
+.margt20 { margin-top: 20px; }
+.margt10 { margin-top: 10px; }
+.margint4 { margin-top: 4px; }
+.marginl4 { margin-left: 4px; }
+.paddb20 { padding-bottom: 20px; }
+.paddv12 { padding-top: 12px; padding-bottom: 12px; }
+.paddh12 { padding-left: 12px; padding-right: 12px; }
+
+/* 宽度类：窄屏自动降级为整行，避免横向溢出 */
+@mixin w-rate($w) { width: $w; @include v.down(md) { width: 100%; margin-right: 0; } }
+.row1 { @include w-rate(10%); }
+.row15 { @include w-rate(15%); }
+.row2 { @include w-rate(20%); }
+.row25 { @include w-rate(25%); }
+.row3 { @include w-rate(30%); }
+.row35 { @include w-rate(35%); }
+.row45 { @include w-rate(45%); }
+.row5 { @include w-rate(50%); }
+.row55 { @include w-rate(55%); }
+.row65 { @include w-rate(65%); }
+.row75 { @include w-rate(75%); }
+.row85 { @include w-rate(85%); }
+.row95 { @include w-rate(95%); }
+.row4, .row6, .row7, .row8, .row9, .row10 { width: 100%; }
+.item49 { @include w-rate(49%); &:nth-child(2n) { margin-right: 0; } }
+.item32 { @include w-rate(32%); &:nth-child(3n) { margin-right: 0; } }
+.item23 { @include w-rate(23%); &:nth-child(4n) { margin-right: 0; } }
+
+.line1 { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
+.ovau { overflow: auto; @include v.hide-scrollbar; }
+
+.pubSelt { background-color: #fff; border-radius: v.$radius; }
+.pubSelt.borderbai > div { border-color: #fff; }
+.pubSelt .iconfont { font-size: 12px; }
+/* 行操作按钮组：多个列表页复用（>=3 处）才进全局 */
+.pubbtnbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  p {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    &::after {
+      display: block;
+      content: '';
+      width: 1px;
+      height: 10px;
+      background-color: #ddd;
+      margin: 0 12px;
+    }
+    &:last-child::after { display: none; }
+  }
+}
+
+.pubInpt { width: 240px; max-width: 100%; height: 32px; border-radius: v.$radius; background-color: #fff; }
+.noHeight.ant-input { height: 0; padding: 0; border: 0; display: inherit; }
+.addImgBtn { width: 80px; height: 80px; }
+
+.colorPrimary { color: var(--main-colorPrimary); }
+.colorSuccess { color: var(--main-colorSuccess); }
+.colorWarning { color: var(--main-colorWarning); }
+.colorError { color: var(--main-colorError); }
+
+/* 主题色操作文本：可点击 + 单行省略 */
+.p-primary,
+.p-warning,
+.p-success,
+.p-error {
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.p-primary { color: var(--main-colorPrimary); }
+.p-warning { color: var(--main-colorWarning); }
+.p-success { color: var(--main-colorSuccess); }
+.p-error { color: var(--main-colorError); }
+
+/* ========== ⑤ antd 覆盖（尽量带作用域父类，禁止裸写全局污染） ========== */
+/* CZHModal 系弹窗外壳 padding 清零见 component/CZHModal/index.scss（就近） */
+.ant-modal .ant-modal-header { border-bottom: 1px solid #f0f0f0; margin: 0; }
+.ant-modal-close { z-index: 1; }
+.ant-modal-confirm-btns { margin-top: 40px; }
+.ant-btn-sm { line-height: 24px; }
+.ant-form-item-explain-error { font-size: 12px; }
+.ant-image-mask-info { color: #fff; .anticon { color: inherit; } }
+.ant-checkbox-wrapper + .ant-checkbox-wrapper { margin-inline-start: 0; }
+.ant-upload { position: relative; }

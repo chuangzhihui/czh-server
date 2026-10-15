@@ -1,0 +1,95 @@
+@use "../../../css/variables" as v;
+
+/* ===================================================================
+ * 上传设置（五个渠道卡片）
+ * 布局：grid auto-fill 自适应，卡片内全 flex/grid，禁写死宽度
+ * 防溢出：所有容器 min-width: 0，input 宽 100%
+ * =================================================================== */
+
+.uploadSet {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px 24px;
+
+  @include v.down(md) { padding: 12px; }
+}
+
+/* 渠道网格：大屏 3~4 列，中屏 2 列，窄屏 1 列 */
+.uploadSet__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  align-items: start;
+  min-width: 0;
+}
+
+/* 单个渠道卡片 */
+.upCard {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid #f0f0f0;
+  border-radius: v.$radius;
+  background-color: #fff;
+  transition: box-shadow .2s, border-color .2s;
+
+  &:hover {
+    border-color: #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+  }
+
+  /* 头部：渠道名 + 启用开关 */
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0 16px;
+    border-bottom: 1px solid #f5f5f5;
+    background-color: #fafafa;
+    border-radius: v.$radius v.$radius 0 0;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, .88);
+    @include v.ellipsis;
+  }
+
+  /* 头部开关：去掉 Form.Item 默认间距，贴右侧 */
+  &__switch {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  /* 字段区 */
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 16px 4px;
+
+    .ant-form-item {
+      margin-bottom: 12px;
+    }
+  }
+
+  /* 底部按钮：右对齐 */
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid #f5f5f5;
+
+    button { min-width: 72px; }
+  }
+}

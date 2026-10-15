@@ -1,0 +1,34 @@
+@use "../../css/variables" as v;
+
+/* ===================================================================
+ * WebGL 登录背景 —— 作用域锁在 .threeBackground 根类下
+ * =================================================================== */
+
+.threeBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* 深蓝底 + 中心提亮，保证登录卡片区域的可读性 */
+  background:
+    radial-gradient(120% 90% at 50% 45%, rgba(9, 62, 110, .55) 0%, rgba(0, 20, 40, .82) 55%, #001224 100%);
+
+  canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .threeBackgroundMask {
+    position: absolute;
+    inset: 0;
+    /* 四周压暗 + 细网格，强化科技感且不抢主体 */
+    background-image:
+      linear-gradient(rgba(255, 255, 255, .028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, .028) 1px, transparent 1px);
+    background-size: 64px 64px, 64px 64px;
+    box-shadow: inset 0 0 220px 60px rgba(0, 10, 24, .9);
+    @include v.down(sm) { background-size: 40px 40px, 40px 40px; }
+  }
+}

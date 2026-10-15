@@ -1,0 +1,32 @@
+@use "../../css/variables" as v;
+
+/* ===================================================================
+ * 内容区标题 & 行内操作按钮私有样式
+ * =================================================================== */
+
+.pubTit {
+  flex: 0 0 auto;
+  min-height: 60px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, .88);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  @include v.down(sm) { padding: 0 12px; min-height: 48px; }
+}
+
+.pline {
+  flex: 0 0 auto;
+  width: 4px;
+  height: 20px;
+  margin-right: 20px;
+  border-radius: 2px;
+  @include v.down(sm) { margin-right: 12px; }
+}
+
+.pubList {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}

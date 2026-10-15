@@ -1,0 +1,103 @@
+@use "../../../css/variables" as v;
+
+/* ===================================================================
+ * 登录安全配置
+ * 布局：分组卡片式表单，内容区限宽居中，每组内部两列 grid（窄屏单列）
+ * 防溢出：所有容器 min-width: 0，input 宽 100%，长 cron 值不撑破布局
+ * =================================================================== */
+
+.authSet {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+/* 内容区：限宽靠左，避免宽屏下输入框被拉得过长 */
+.authSet__body {
+  width: 100%;
+  max-width: 960px;
+  padding: 8px 24px 0;
+  min-width: 0;
+
+  @include v.down(md) { padding: 0 12px; }
+}
+
+/* 分组 */
+.authSet__section {
+  padding-top: 4px;
+
+  & + & { margin-top: 8px; }
+}
+
+/* 分组标题：左侧色条 + 加粗文字 + 延伸分割线 */
+.authSet__section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  padding: 12px 0;
+
+  &::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    border-radius: 2px;
+    background: #13c2c2;
+    flex: none;
+  }
+
+  &::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background: rgba(5, 5, 5, 0.06);
+  }
+}
+
+/* 字段网格：两列，窄屏单列 */
+.authSet__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 32px;
+  align-content: start;
+  min-width: 0;
+
+  @include v.down(md) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px 0;
+  }
+}
+
+/* 数字输入框（带单位后缀）铺满单元格：外层 group-wrapper 与内层都要 100% */
+.authSet__grid {
+  .ant-input-number-group-wrapper,
+  .ant-input-number {
+    width: 100%;
+  }
+}
+
+/* 底部确定按钮：右下，与内容区对齐并带分割线 */
+.authSet__foot {
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px 24px;
+  border-top: 1px solid rgba(5, 5, 5, 0.06);
+
+  @include v.down(md) { padding: 12px; }
+
+  button { min-width: 88px; }
+}

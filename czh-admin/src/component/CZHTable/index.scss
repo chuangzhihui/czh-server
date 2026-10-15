@@ -1,0 +1,26 @@
+.CZHTableContainer {
+  flex: 1;
+  //width: 100%;
+  position: relative;
+  overflow: hidden;
+  margin: 0 24px;
+
+  .CZHTableContent {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    .ant-table-cell-scrollbar {
+      box-shadow: none;
+      display: none !important;
+    }
+
+    .ant-table-cell-fix-end {
+      inset-inline-end: 0 !important;
+    }
+  }
+
+
+}

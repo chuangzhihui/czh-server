@@ -1,0 +1,53 @@
+@use "../../css/variables" as v;
+
+/* ===================================================================
+ * CZHModal / FormModal 弹窗外壳（wrapClassName = customerModal）
+ * 约定：只做减法 —— modal 层（content/header/body/footer）padding 一律为 0。
+ * 这里不再对内部内容做任何 padding 兜底：表单、预览区、文件库等一律贴边，
+ * 哪个弹窗需要留白，由该弹窗自己在就近 .scss 里加，不在外壳层统一补。
+ * =================================================================== */
+
+/* 特异性高于全局 .ant-modal .ant-modal-body，不依赖加载顺序
+ * 注：antd 6 的 modal DOM 为 .ant-modal > .ant-modal-container > (header/body/footer)，
+ *     padding 挂在 .ant-modal-container 上，必须与 .ant-modal-content 一起清零。
+ *     注意：这里清零的是 modal 外壳层；body 里的内容区（表单）padding 见下方规则。 */
+.ant-modal-wrap.customerModal,
+.ant-modal-root .customerModal {
+  .ant-modal-content { padding: 0; }
+  .ant-modal-container { padding: 0; }
+  .ant-modal-header { padding: 0; margin: 0; }
+  .ant-modal-body { padding: 0; }
+  .ant-modal-footer { margin: 0; padding: 0; }
+}
+
+/* 内容区（body 内的表单，非 modal 层）：表单类弹窗统一留白
+ * 注：FormModal 会在 body 内包一层 .customerModalFormWrap（承载回车提交的 keydown 事件），
+ *     antd 6 实际 DOM（见 @rc-component/dialog 的 Panel）为：
+ *       .ant-modal > .ant-modal-container > .ant-modal-body > children
+ *     故 FormModal 下表单是 body > wrap > form，CZHModal 下是 body > form，两条都要覆盖。
+ *     坑：不要写成 `.ant-modal-body > :is(.customerModalFormWrap > .ant-form)` ——
+ *     :is() 的匹配主体是最后一个复合选择器（.ant-form），
+ *     会退化成「要求 body 的直接子级自己就是 form 且其父级是 wrap」，永不匹配 */
+.ant-modal-wrap.customerModal .ant-modal-body > .ant-form {
+  padding: 20px 24px 4px;
+}
+
+.ant-modal-wrap.customerModal .ant-modal-body > .customerModalFormWrap > .ant-form {
+  padding: 20px 24px 4px;
+}
+
+/* 自定义底部按钮条（属于弹窗内容，非 antd modal 层元素） */
+.customerModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 24px;
+  border-top: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+
+  button {
+    min-width: 100px;
+    height: 36px;
+  }
+}

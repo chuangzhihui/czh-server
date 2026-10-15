@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.czh.service.dao.AdminActionLogDao">
+
+    <resultMap type="com.czh.service.vo.admin.AdminActionLogVo" id="AdminActionLogMap">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="operation" column="operation" jdbcType="VARCHAR"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="userName" column="userName" jdbcType="VARCHAR"/>
+        <result property="adminId" column="adminId" jdbcType="INTEGER"/>
+        <result property="params" column="params" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="bake" column="bake" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 操作日志分页列表 -->
+    <select id="getAdminLogList" resultMap="AdminActionLogMap"
+            parameterType="com.czh.service.dto.admin.AdminLogDto">
+        select id,operation,method,createTime,userName,adminId,params,ip,bake
+        from czh_admin_action_log
+        <where>
+            <if test="adminId != null">
+                and adminId = #{adminId}
+            </if>
+            <if test="ip != null and ip != ''">
+                and ip like concat('%', #{ip}, '%')
+            </if>
+            <if test="address != null and address != ''">
+                and method like concat('%', #{address}, '%')
+            </if>
+            <if test="desc != null and desc != ''">
+                and operation like concat('%', #{desc}, '%')
+            </if>
+            <if test="stime!=null and stime!=''">
+                and createTime between #{stime} and #{etime}
+            </if>
+        </where>
+        order by createTime desc
+    </select>
+
+</mapper>

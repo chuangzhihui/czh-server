@@ -1,0 +1,320 @@
+@use "../../../css/variables" as v;
+
+/* ===================================================================
+ * 主题配色弹窗（对应原型 ⑪）
+ * 结构：左侧实时预览（flex:1） + 右侧官方主题卡片（固定 430，自身滚动）
+ * 全部走 flex，禁止 vh / calc 魔法高度；主色一律取 CSS 变量
+ * =================================================================== */
+
+.setColor {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  min-width: 0;
+  /* 内容区留白（modal 层已清零，见 component/CZHModal/index.scss） */
+  padding: 16px 24px 20px;
+
+  @include v.down(lg) { flex-direction: column; }
+}
+
+.setColor__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, .88);
+  margin-bottom: 8px;
+}
+
+/* ---------------- 左：实时预览 ---------------- */
+.setColor__preview {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.previewFrame {
+  border: 1px solid #f0f0f0;
+  border-radius: v.$radius;
+  overflow: hidden;
+  background: #fff;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 8px;
+    color: #fff;
+    font-size: 11px;
+    background: var(--main-colorPrimary);
+
+    .anticon { font-size: 12px; }
+  }
+
+  &__name {
+    font-weight: 600;
+    @include v.ellipsis;
+  }
+
+  &__body {
+    display: flex;
+    height: 150px;
+    min-height: 0;
+  }
+}
+
+.previewMenu {
+  flex: 0 0 130px;
+  border-right: 1px solid #f0f0f0;
+  padding: 8px 6px;
+  background: #fff;
+  overflow: hidden;
+  @include v.down(sm) { flex: 0 0 100px; }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 20px;
+    margin-bottom: 3px;
+    padding-left: 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: rgba(0, 0, 0, .88);
+
+    &.on {
+      color: var(--main-colorPrimary);
+      background: var(--main-colorPrimary-soft);
+    }
+  }
+
+  &__dot {
+    flex: 0 0 auto;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .25);
+
+    .previewMenu__item.on & { background: var(--main-colorPrimary); }
+  }
+}
+
+.previewMain {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 10px;
+  overflow: hidden;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  &__ipt { width: 120px; max-width: 100%; }
+  &__sel { width: 120px; max-width: 100%; }
+
+  .ant-table-cell { padding: 2px 8px; font-size: 11px; }
+  .ant-table-thead > tr > th { font-size: 11px; }
+}
+
+/* 基础色板：10 级 */
+.strip {
+  display: flex;
+  gap: 3px;
+
+  &__cell {
+    flex: 1 1 auto;
+    height: 26px;
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06);
+  }
+
+  &__scale {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+
+    span {
+      flex: 1 1 auto;
+      text-align: center;
+      font-size: 10px;
+      color: rgba(0, 0, 0, .25);
+    }
+  }
+}
+
+/* 字阶 / 阴影三级 / 间距模度 */
+.setColor__tokens {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.tokenCard {
+  flex: 1 1 300px;
+  min-width: 0;
+
+  &--shadow { flex: 0 1 230px; }
+
+  &__t {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, .88);
+    margin-bottom: 6px;
+  }
+
+  &__steps {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: rgba(0, 0, 0, .88);
+  }
+
+  &__shadows {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+
+    span {
+      flex: 1 1 auto;
+      height: 34px;
+      border-radius: v.$radius;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: rgba(0, 0, 0, .45);
+    }
+  }
+
+  &__spaces {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+
+    span {
+      flex: 0 0 auto;
+      height: 16px;
+      border-radius: 2px;
+      background: var(--main-colorPrimary-soft);
+      border: 1px solid var(--main-colorPrimary-border);
+    }
+  }
+
+  &__tip {
+    font-size: 11px;
+    color: rgba(0, 0, 0, .25);
+    margin-top: 4px;
+  }
+}
+
+/* ---------------- 右：官方主题卡片 ---------------- */
+.setColor__picker {
+  flex: 0 0 430px;
+  max-width: 100%;
+  max-height: 560px;
+  overflow: auto;
+  padding-right: 6px;
+  @include v.hide-scrollbar;
+
+  @include v.down(lg) {
+    flex: 1 1 auto;
+    width: 100%;
+    max-height: none;
+  }
+}
+
+.themeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  @include v.down(sm) { grid-template-columns: 1fr; }
+}
+
+.themeCard {
+  padding: 8px;
+  border: 2px solid #f0f0f0;
+  border-radius: v.$radius;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .2s;
+
+  &:hover { border-color: var(--main-colorPrimary-border); }
+
+  &.on {
+    border-color: var(--main-colorPrimary);
+    background: var(--main-colorPrimary-soft);
+  }
+
+  &__strip {
+    display: flex;
+    height: 20px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+
+    span { flex: 1 1 auto; }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+
+    b { font-size: 12px; @include v.ellipsis; }
+
+    em {
+      font-style: normal;
+      font-size: 10px;
+      color: rgba(0, 0, 0, .45);
+      @include v.ellipsis;
+    }
+  }
+
+  &__dot {
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08);
+  }
+
+  &__check {
+    margin-left: auto;
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: var(--main-colorPrimary);
+  }
+
+  &__picker { margin-top: 6px; }
+
+  &--custom { grid-column: 1 / -1; }
+}
+
+.themeNote {
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, .45);
+
+  b { color: rgba(0, 0, 0, .88); }
+
+  code {
+    padding: 0 4px;
+    border-radius: 3px;
+    background: #f5f5f5;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  }
+}
+
+.themeFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}

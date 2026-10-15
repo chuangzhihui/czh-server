@@ -1,0 +1,108 @@
+@use "../../css/variables" as v;
+
+/* ===================================================================
+ * 外壳私有样式（pages/Layout.scss）
+ * 高度一律交给 flex 链路，禁止 82vh / calc(100% - 90px) 这类魔法数字
+ * =================================================================== */
+
+.siderCzh {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid #efefef;
+}
+
+.siderCzh__logo {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: v.$header-height;
+  overflow: hidden;
+
+  .logoIcon {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logoName {
+    @include v.ellipsis;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 12px;
+    max-width: 140px;
+  }
+
+  .ant-layout-sider-collapsed & .logoName { width: 0; margin-left: 0; }
+}
+
+.siderCzh__menus {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  @include v.hide-scrollbar;
+
+  .iconfont { font-size: 18px; }
+}
+
+.headerCzh {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+
+  .iconfont { font-size: 18px; }
+
+  .avatar {
+    flex: 0 0 auto;
+    display: block;
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    object-fit: cover;
+    box-shadow: 0 0 16px #e8e8e8;
+    border: 4px solid #fff;
+  }
+
+  .themeBtn {
+    flex: 0 0 auto;
+    cursor: pointer;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+
+    .iconfont { font-size: 20px; }
+    p { font-weight: bold; margin-left: 6px; }
+    &::after {
+      display: block;
+      content: '';
+      flex: 0 0 auto;
+      width: 1px;
+      height: 24px;
+      background-color: #efefef;
+      margin: 0 24px;
+    }
+  }
+
+  .userBtn {
+    flex: 0 0 auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    .userName { @include v.ellipsis; max-width: 160px; }
+    @include v.down(md) { .userName { display: none; } }
+  }
+}
+
+/* 面包屑已移入页面视图（Route.tsx），占据原页标题的位置 */

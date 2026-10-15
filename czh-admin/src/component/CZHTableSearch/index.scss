@@ -1,0 +1,17 @@
+@use "../../css/variables" as v;
+
+/* ===================================================================
+ * 搜索区私有样式
+ * =================================================================== */
+
+.searchView {
+  flex: 0 0 auto;
+  padding: 10px 20px 20px 30px;
+  .ant-form-item{
+    margin-bottom: 0;
+  }
+  @include v.down(sm) { padding: 8px 12px 0 12px; }
+
+  .ant-col { height: auto; }
+  .searchBtns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+}

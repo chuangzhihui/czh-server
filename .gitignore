@@ -42,3 +42,6 @@ build/
 # B-06 结论：czh-admin/.env.development 与 .env.production **有意不忽略**——
 # 前端 VITE_* 变量会被打进构建产物、本就等同公开（当前两份文件只有 VITE_API_URL，无密钥），
 # 忽略反而会让新 clone 的工程因缺文件而起不来。若将来要往里放敏感值，必须改回忽略并换用注入方式。
+node_modules/
+dist/
+coverage/

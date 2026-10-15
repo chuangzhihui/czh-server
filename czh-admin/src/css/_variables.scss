@@ -1,0 +1,46 @@
+@use "sass:map";
+
+/* ===================================================================
+ * 全局样式变量与工具（局部私有，不产出 CSS）
+ * 断点阈值与 antd Grid.useBreakpoint() 完全一致
+ * =================================================================== */
+
+$bp: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1600px
+);
+
+/** 大于等于某断点 */
+@mixin up($key) {
+  @media (min-width: map.get($bp, $key)) { @content; }
+}
+
+/** 小于某断点 */
+@mixin down($key) {
+  @media (max-width: (map.get($bp, $key) - 0.02px)) { @content; }
+}
+
+/** 隐藏滚动条（抽成 mixin，禁止各处重复写 ::-webkit-scrollbar） */
+@mixin hide-scrollbar {
+  &::-webkit-scrollbar { display: none; }
+}
+
+/** 文本单行省略（必须配合 min-width: 0 使用） */
+@mixin ellipsis {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---- 基础变量 ---- */
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue',
+  Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+$gap: 8px;
+$header-height: 90px;
+$sider-width: 240px;
+$radius: 6px;
