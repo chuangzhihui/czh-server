@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: dev #dev 开发环境 prod 生产环境 test 测试环境
+
+#跨域白名单：允许跨域访问后台的前端来源，多个用逗号分隔
+#不配置时取 CorsFilter 中的默认值（本地开发 5173 + 生产后台域名）
+#新增部署域名时必须在白名单中登记，未命中来源的跨域请求会被浏览器拦截
+czh:
+  cors:
+    allowed-origins: http://localhost:5173,http://127.0.0.1:5173,https://java.cqczh.com.cn:10443
+  # 上传令牌的 HMAC 签名密钥（缺陷 BE-04）。
+  # 原实现把源码常量 "userGetUploadToken" 当签名密钥用（随 jar 分发等于公开），现改为独立配置项，
+  # 默认值须与该常量不同，且必须与 UploadSetServiceImpl 签发令牌时用的是同一份密钥（同一个配置项）。
+  upload-token:
+    secret: 89afaddc514d300615480ed60ace25d1
+  # 管理员登录令牌的独立 HMAC 签名密钥（缺陷 BE-06）。
+  # 不复用管理员密码哈希当签名密钥；改密码时 editPwd 会吊销 Redis 登录态强制重登。
+  admin-token:
+    secret: 3a95dc9615bb63fbcf78ee2adb5f4359

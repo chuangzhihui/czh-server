@@ -18,7 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-
+.workbuddy
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 环境变量文件：填好真实密钥的 .env 绝不允许提交 ###
+# 只忽略 .env 与 local 变体；.env.example / .env.test 是模板与测试配置，需要入库
+# 2026-10-15 口径：后端密钥已放弃 ${XXX} 严格占位模式、还原为 yaml 明文默认（见《项目开发规范》§17 v1.7），
+# 根目录 .env.example 已删除；本组忽略规则保留——生产部署仍可用环境变量覆盖同名配置项
+.env
+.env.local
+.env.*.local
+# B-06 结论：czh-admin/.env.development 与 .env.production **有意不忽略**——
+# 前端 VITE_* 变量会被打进构建产物、本就等同公开（当前两份文件只有 VITE_API_URL，无密钥），
+# 忽略反而会让新 clone 的工程因缺文件而起不来。若将来要往里放敏感值，必须改回忽略并换用注入方式。

@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: dev #dev 开发环境 prod 生产环境 test 测试环境
+
+czh:
+  # 上传令牌的 HMAC 签名密钥（缺陷 BE-04）。
+  # 默认值不能退回源码常量 "userGetUploadToken"（随 jar 分发等于公开）；
+  # 必须与 UploadSetServiceImpl 签发令牌时用的是同一份密钥（同一个配置项）。
+  upload-token:
+    secret: 89afaddc514d300615480ed60ace25d1

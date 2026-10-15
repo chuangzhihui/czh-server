@@ -13,16 +13,21 @@
         <result property="sort" column="sort" jdbcType="INTEGER"/>
         <result property="display" column="display" jdbcType="INTEGER"/>
     </resultMap>
-    <select id="getAuthMenuList" resultType="com.czh.service.vo.admin.base.AuthMenuVo">
-        select id,path,name as title,icon from czh_menu where pid=#{pid} and id in(${ids}) and display=1 order by sort asc
+    <!-- BE-30：一次查全表（扁平），由 MenuServiceImpl 在内存里按 pid 构树。
+         原实现 getAuthMenuList 每层递归各查一次（N+1），而 getAuthMenuByRoleId
+         在用户每次刷新页面（Layout 挂载 -> getLoginInfo）时都会触发。
+         菜单数据量小（本项目 30 余行），"一次查询 + 内存构树"是最简解，
+         不引入缓存，也就没有缓存失效的复杂度。旧 select 已随 BE-30 合并清理删除。 -->
+    <select id="selectAuthMenuFlat" resultMap="MenuMap">
+        select id,pid,name,path,icon from czh_menu where id in(${ids}) and display=1 order by sort asc
     </select>
-    <select id="getMenusByPid" resultType="com.czh.service.vo.admin.base.GetMenusByPidVo"
+    <select id="getMenusByPid" resultType="com.czh.service.vo.admin.GetMenusByPidVo"
             parameterType="java.lang.Integer">
-        select id,name from czh_menu where pid=#{pid} order by sort asc
+        select id,name,path from czh_menu where pid=#{pid} order by sort asc
     </select>
-    <select id="getMenuListByPid" resultType="com.czh.service.vo.admin.base.GetMenuListVo"
+    <select id="getMenuListByPid" resultType="com.czh.service.vo.admin.GetMenuListVo"
             parameterType="java.lang.Integer">
-        select * from czh_menu where pid=#{pid} order by sort asc
+        select id,pid,name,path,route,level,icon,sort,display from czh_menu where pid=#{pid} order by sort asc
     </select>
 
 

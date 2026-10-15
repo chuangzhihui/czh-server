@@ -1,5 +1,7 @@
 package com.czh.common.utils.txCosUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.czh.common.exception.ErrorException;
 import com.czh.common.utils.FileUtil;
 import com.czh.common.utils.MediaUtils;
@@ -30,6 +32,7 @@ import java.util.TreeMap;
 
 @Getter
 @Setter
+@Slf4j
 public class TxCosUtil {
     private String bucket;
     private String bucketName;
@@ -54,9 +57,9 @@ public class TxCosUtil {
         try {
             cosclient.deleteObject(bucketName, key);
         } catch (CosServiceException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
         } catch (CosClientException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
         }
     }
     public LocalUploadVo uploadFile(MultipartFile multipartFile, String key,Integer type){
@@ -72,7 +75,7 @@ public class TxCosUtil {
             file= FileUtil.multipartFileToTempFile(multipartFile);
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,key,file);
             PutObjectResult putObjectResult = cosclient.putObject(putObjectRequest);
-            System.out.println(putObjectResult.getRequestId());
+            log.info(putObjectResult.getRequestId());
             LocalUploadVo vo=new LocalUploadVo();
             vo.setName(multipartFile.getOriginalFilename());
             vo.setUrl(path+"/"+key);
@@ -104,10 +107,10 @@ public class TxCosUtil {
             }
             return vo;
         } catch (CosServiceException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
             throw new ErrorException("上传到腾讯云COS失败");
         } catch (CosClientException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
             throw new ErrorException("上传到腾讯云COS失败");
         } catch (IOException e) {
             throw new ErrorException("文件解析失败");
@@ -158,7 +161,7 @@ public class TxCosUtil {
 //            config.put("policy", Jackson.toJsonPrettyString(policy));
 
             Response response = CosStsClient.getCredential(config);
-            System.out.println(Jackson.toJsonPrettyString(response));
+            log.info(Jackson.toJsonPrettyString(response));
             Map<String,Object> json=new HashMap<>();
             json.put("TmpSecretId",response.credentials.tmpSecretId);
             json.put("TmpSecretKey",response.credentials.tmpSecretKey);

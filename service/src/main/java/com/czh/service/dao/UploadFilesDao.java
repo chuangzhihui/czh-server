@@ -1,9 +1,10 @@
 package com.czh.service.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.czh.service.dto.admin.base.GetFileListDto;
+import com.czh.service.dto.admin.GetFileListDto;
 import com.czh.service.entity.UploadFiles;
-import com.czh.service.vo.admin.base.UploadLog;
+import com.czh.service.vo.admin.UploadFileListVo;
+import com.czh.service.vo.admin.UploadLog;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public interface UploadFilesDao extends BaseMapper<UploadFiles> {
 
-    List<UploadFiles> selectByPid(GetFileListDto req);
+    List<UploadFileListVo> selectByPid(GetFileListDto req);
 
     List<UploadLog> getImgList();
 }

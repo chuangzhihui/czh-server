@@ -1,5 +1,7 @@
 package com.czh.common.utils.aliOssUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
@@ -22,6 +24,7 @@ import java.util.Map;
 
 @Getter
 @Setter
+@Slf4j
 public class AliOssUtil {
     private String AccessKeyID;
     private String AccessKey;
@@ -83,7 +86,7 @@ public class AliOssUtil {
             }
             return vo;
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("执行异常", e);
             throw new ErrorException("文件解析失败!");
         }finally {
             if(tempFile!=null)

@@ -1,5 +1,7 @@
 package com.czh.service.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.czh.common.exception.ErrorException;
 import com.czh.common.utils.DateUtil;
@@ -11,15 +13,27 @@ import com.czh.service.service.DbBackupService;
 import com.czh.service.vo.admin.base.DbBackupVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -30,8 +44,28 @@ import java.util.zip.ZipOutputStream;
  * @author makejava
  * @since 2025-06-05 22:20:51
  */
+@Slf4j
 @Service
 public class DbBackupServiceImpl extends ServiceImpl<DbBackupDao,DbBackup> implements DbBackupService {
+
+    /**
+     * 密码通过环境变量 {@code MYSQL_PWD} 传给 mysqldump / mysql 客户端（BE-02）。
+     * <p>
+     * 为什么不继续用 {@code -p<password>}：即便改成参数数组、不走 shell，
+     * 命令行参数仍会被同机任何用户通过 {@code ps} 看到，且仍可能被写进日志。
+     * 通过环境变量传递可以把密码彻底移出 argv。
+     */
+    private static final String MYSQL_PWD_ENV = "MYSQL_PWD";
+
+    /** 数据库名白名单：mysqldump 的库名参数必须命中，防止配置被越权改造成注入载体 */
+    private static final Pattern DB_NAME_PATTERN = Pattern.compile("^[A-Za-z0-9_$]{1,64}$");
+
+    /** 主机白名单：允许域名/IP，禁止空白、分号、管道等 shell 元字符 */
+    private static final Pattern HOST_PATTERN = Pattern.compile("^[A-Za-z0-9._\\-]{1,253}$");
+
+    /** 端口白名单：纯数字 1~5 位 */
+    private static final Pattern PORT_PATTERN = Pattern.compile("^[0-9]{1,5}$");
+
     @Value("${spring.datasource.backuppath}")
     private String backupPath;//备份文件目录
 
@@ -46,16 +80,6 @@ public class DbBackupServiceImpl extends ServiceImpl<DbBackupDao,DbBackup> imple
     @Value("${spring.sql.port}")
     private String mysqlPort;//数据库端口
 
-    @Value("${spring.data.mongodb.database}")
-    private String mongoDatabase;//数据库名称
-    @Value("${spring.data.mongodb.host}")
-    private String mongoHost;//数据库地址
-    @Value("${spring.data.mongodb.username}")
-    private String mongoUsername;//数据库用户名
-    @Value("${spring.data.mongodb.password}")
-    private String mongoPassword;//数据库密码
-    @Value("${spring.data.mongodb.port}")
-    private String mongoPort;//数据库端口
     @Override
     public void backup(Integer adminId) {
         Path folderPath = Paths.get(backupPath + "SQL" + File.separator);
@@ -64,32 +88,26 @@ public class DbBackupServiceImpl extends ServiceImpl<DbBackupDao,DbBackup> imple
             if (!Files.exists(folderPath)) {
                 // 创建文件夹
                 Files.createDirectories(folderPath);
-                System.out.println("文件夹已成功创建: " + folderPath);
+                log.info("文件夹已成功创建: " + folderPath);
             } else {
-                System.out.println("文件夹已经存在: " + folderPath);
+                log.info("文件夹已经存在: " + folderPath);
             }
         } catch (IOException e) {
             // 捕获并处理IOException
-            e.printStackTrace();
+            log.error("执行异常", e);
         }
 
         String mysqlFile=backupPath+"mysql.sql";
-        String mongoFile=backupPath+"mongodb_backup.zip";
-        String mongoFloder=backupPath+"mongodb_backup";
-        FileUtil.deleteFolder(new File(mongoFloder));
 
         Path mysqlPath =Paths.get(mysqlFile);
-        Path mongoPath =Paths.get(mongoFile);
         try {
             Files.deleteIfExists(mysqlPath);
-            Files.deleteIfExists(mongoPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
             throw new ErrorException("备份数据库失败!");
         }
         //备份MySQL
         backupMysql();
-        backupMongoDB();
         String fileName= DateUtil.getStrDate("yyyyMMddHHmmss")+".zip";
         String zipFilePath=backupPath+fileName;
         try{
@@ -101,12 +119,6 @@ public class DbBackupServiceImpl extends ServiceImpl<DbBackupDao,DbBackup> imple
             zipOut.closeEntry();
             // 删除临时文件
             Files.deleteIfExists(mysqlPath);
-            //添加MongoDB文件
-            zipOut.putNextEntry(new ZipEntry("mongodb.zip"));
-            zipOut.write(Files.readAllBytes(mongoPath));
-            zipOut.closeEntry();
-            // 删除临时文件
-            Files.deleteIfExists(mongoPath);
             zipOut.close();
             //插入记录
             File file=new File(zipFilePath);
@@ -118,7 +130,7 @@ public class DbBackupServiceImpl extends ServiceImpl<DbBackupDao,DbBackup> imple
             save(dbBackup);
         }catch (IOException e)
         {
-            e.printStackTrace();
+            log.error("执行异常", e);
             throw new ErrorException("备份数据库失败!");
         }
     }
@@ -137,12 +149,6 @@ public class DbBackupServiceImpl extends ServiceImpl<DbBackupDao,DbBackup> imple
         FileUtil.unZipFiles(backup.getFilePath(),backupPath+"restoreTempDir");
         //恢复mysql
         restoreMysql(backupPath+"restoreTempDir/mysql.sql");
-        //一般情况不恢复MongoDB 因为里面只有操作日志
-        //获取MongoDB
-        //先解压
-//        FileUtil.unZipFiles(backupPath+"restoreTempDir/mongodb.zip",backupPath+"restoreTempDir/mongodb");
-        //执行恢复
-//        resotreMongoDb(backupPath+"restoreTempDir/mongodb");
     }
 
     @Override
@@ -157,106 +163,164 @@ public class DbBackupServiceImpl extends ServiceImpl<DbBackupDao,DbBackup> imple
     {
         String file_name = "mysql.sql";
         String real_path = backupPath + file_name;
-        String command = "mysqldump -h " + mysqlHost + " -P " + mysqlPort + " -u " + mysqlUsername + " -p" + mysqlPassword + " " + mysqlDatabase + " -r " + real_path + " --no-tablespaces";
+        // BE-02：不再拼接字符串命令，改用参数数组；密码走 MYSQL_PWD 环境变量
+        ProcessBuilder processBuilder = buildMysqlProcess("mysqldump",
+                Arrays.asList("-r", real_path, "--no-tablespaces"));
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+            log.info("执行 mysqldump 备份 db={} program={} 参数个数={}（命令行不含密码，已脱敏）",
+                    mysqlDatabase, "mysqldump", processBuilder.command().size());
             Process process = processBuilder.start();
+            // 必须先读空 stderr / stdout，否则缓冲区写满会导致子进程阻塞
+            String errorOutput = readFully(process.getErrorStream());
+            readFully(process.getInputStream());
             int exitCode = process.waitFor();
-            if (exitCode == 0) {
-
-            } else {
-                throw new ErrorException("MYSQL备份失败:" + process.getErrorStream().toString());
+            if (exitCode != 0) {
+                throw new ErrorException("MYSQL备份失败:" + errorOutput);
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            log.error("执行异常", e);
             throw new ErrorException("MYSQL备份失败:" + e.getMessage());
-        }
-    }
-    //mongoDB数据备份
-    private void backupMongoDB() {
-
-        // 创建备份文件
-        String filePath = backupPath + "mongodb_backup";
-        String zipPath = backupPath + "mongodb_backup.zip";
-        try {
-            // 使用 mongodump 命令备份数据库
-            ProcessBuilder processBuilder = new ProcessBuilder(
-                    "mongodump",
-                    "--host", mongoHost,
-                    "--port", mongoPort,
-                    "--username", mongoUsername,
-                    "--password", mongoPassword,
-                    "--db", mongoDatabase,
-                    "--out", filePath);
-
-            processBuilder.redirectErrorStream(true);
-            Process process = processBuilder.start();
-
-            // 等待备份完成
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                FileUtil.addFolderToZip(filePath,zipPath);
-                FileUtil.deleteFolder(new File(filePath));
-            } else {
-                throw new ErrorException("mongoDB备份失败:" + process.getErrorStream().toString());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ErrorException("mongoDB备份失败:" + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ErrorException("MYSQL备份被中断!");
         }
     }
 
-    @SneakyThrows
+    /**
+     * 恢复MySQL
+     *
+     * @param sqlFile 待导入的 SQL 文件路径
+     */
     private void restoreMysql(String sqlFile)
     {
-        String command = "mysql -h " + mysqlHost + " -P " + mysqlPort + " -u " + mysqlUsername + " -p" + mysqlPassword + " " + mysqlDatabase;
-        System.out.println("command:" + command);
+        // BE-02：原来这里既有 log.info("command:" + command) 把含明文密码的命令行写进日志，
+        // 又用 Runtime.exec(字符串) 交给 shell 解析。现改为参数数组 + MYSQL_PWD，日志只记脱敏摘要。
+        ProcessBuilder processBuilder = buildMysqlProcess("mysql", Collections.emptyList());
         Process process = null;
         try {
-//            ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-//            Process process = processBuilder.start();
-            process = Runtime.getRuntime().exec(command);
+            log.info("执行 mysql 恢复 db={} program={} 参数个数={}（命令行不含密码，已脱敏）",
+                    mysqlDatabase, "mysql", processBuilder.command().size());
+            process = processBuilder.start();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
             throw new ErrorException("恢复数据库失败!" + e.getMessage());
         }
-        OutputStream outputStream = process.getOutputStream();
-        BufferedReader bufferedReader = null;
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile), "utf-8"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        StringBuffer sb = new StringBuffer();
-        String b = null;
-        while ((b = bufferedReader.readLine()) != null) {
-            sb.append(b + "\r\n");
-        }
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "utf-8");
-        outputStreamWriter.write(sb.toString());
-        outputStreamWriter.flush();
-        outputStreamWriter.close();
-        bufferedReader.close();
-        outputStream.close();
-    }
-    private void resotreMongoDb(String mongoDir)
-    {
-//        mongorestore --host <hostname> --port <port> --username <username> --password <password> --authenticationDatabase <auth-db> /path/to/backup/
-        String command = "mongorestore --host="+mongoHost+" --port="+mongoPort+" --username="+mongoUsername+" --password="+mongoPassword+" --drop --db="+mongoDatabase+" " + mongoDir+"/"+mongoDatabase;
-        System.out.println("commond:"+command);
-        try {
-            Process process = Runtime.getRuntime().exec(command);
-            int exitCode=process.waitFor();
-            if (exitCode == 0) {
-
-            } else {
-                throw new ErrorException("恢复mongoDB备份失败:" + process.getErrorStream().toString());
+            // 1) 先把 SQL 灌进 mysql 客户端的 stdin
+            try (OutputStream outputStream = process.getOutputStream();
+                 Writer outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+                 BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(sqlFile), StandardCharsets.UTF_8)) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    outputStreamWriter.write(line);
+                    outputStreamWriter.write("\n");
+                }
+                outputStreamWriter.flush();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            // 2) 读完 stderr 再等退出码，避免输出缓冲区满导致死锁
+            String errorOutput = readFully(process.getErrorStream());
+            readFully(process.getInputStream());
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new ErrorException("恢复数据库失败:" + errorOutput);
+            }
+        } catch (IOException e) {
+            log.error("执行异常", e);
+            throw new ErrorException("恢复数据库失败!" + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ErrorException("恢复数据库被中断!");
         }
     }
 
+    /**
+     * 构建 mysql / mysqldump 的进程（BE-02 核心）。
+     * <p>
+     * 三道防线：① 参数数组，不经 shell 解析，命令注入无效；
+     * ② 密码走环境变量，不出现在 argv（也就不会被 ps 或日志捕获）；
+     * ③ 库名/主机/端口走白名单，配置被越权改写也无法注入。
+     *
+     * @param program   程序名（mysqldump / mysql）
+     * @param extraArgs 附加参数（如 -r 输出文件），可为空列表
+     * @return 已注入 MYSQL_PWD 的 ProcessBuilder
+     */
+    private ProcessBuilder buildMysqlProcess(String program, List<String> extraArgs)
+    {
+        List<String> command = new ArrayList<>();
+        command.add(program);
+        command.add("-h");
+        command.add(requireSafeHost(mysqlHost));
+        command.add("-P");
+        command.add(requireSafePort(mysqlPort));
+        command.add("-u");
+        command.add(requireNonBlank(mysqlUsername, "数据库用户名"));
+        command.add(requireSafeDatabase(mysqlDatabase));
+        if (extraArgs != null && !extraArgs.isEmpty()) {
+            command.addAll(extraArgs);
+        }
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.environment().put(MYSQL_PWD_ENV, mysqlPassword == null ? "" : mysqlPassword);
+        return processBuilder;
+    }
 
+    /**
+     * 读取流内容并关闭（防止子进程输出缓冲区写满导致阻塞）
+     *
+     * @param inputStream 进程输出流，允许为 null
+     * @return 文本内容；读取失败返回空串
+     */
+    private String readFully(InputStream inputStream)
+    {
+        if (inputStream == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (sb.length() > 0) {
+                    sb.append('\n');
+                }
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            log.warn("读取进程输出流失败", e);
+        }
+        return sb.toString();
+    }
 
+    private String requireSafeDatabase(String database)
+    {
+        String value = requireNonBlank(database, "数据库名称");
+        if (!DB_NAME_PATTERN.matcher(value).matches()) {
+            throw new ErrorException("数据库名称非法!");
+        }
+        return value;
+    }
+
+    private String requireSafeHost(String host)
+    {
+        String value = host == null || host.isBlank() ? "127.0.0.1" : host.trim();
+        if (!HOST_PATTERN.matcher(value).matches()) {
+            throw new ErrorException("数据库地址非法!");
+        }
+        return value;
+    }
+
+    private String requireSafePort(String port)
+    {
+        String value = port == null || port.isBlank() ? "3306" : port.trim();
+        if (!PORT_PATTERN.matcher(value).matches()) {
+            throw new ErrorException("数据库端口非法!");
+        }
+        return value;
+    }
+
+    private String requireNonBlank(String value, String desc)
+    {
+        if (value == null || value.isBlank()) {
+            throw new ErrorException(desc + "未配置!");
+        }
+        return value.trim();
+    }
 }

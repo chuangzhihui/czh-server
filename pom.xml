@@ -25,6 +25,11 @@
     <!--    </parent>-->
     <properties>
         <java.version>17</java.version>
+        <!-- 显式声明编译版本：java.version 属性只有 spring-boot-starter-parent 会读取，
+             本模板 parent 已注释掉，不配 release 时 maven-compiler-plugin 默认按 Java 8 编译——
+             Maven 命令行（JDK17）不校验 API 所以能过，但 IDEA 会把模块语言级别定为 8，
+             代码里 Java 11+ 的 API（如 String.isBlank）会报"找不到符号"（2026-10-15 实测踩坑） -->
+        <maven.compiler.release>17</maven.compiler.release>
         <revision>1.1.1</revision>
         <springboot.version>3.5.0</springboot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -80,6 +85,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <release>17</release>
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>

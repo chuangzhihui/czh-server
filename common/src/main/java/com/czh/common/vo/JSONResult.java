@@ -64,6 +64,32 @@ public  class JSONResult<T>  implements Serializable {
         return res;
     }
 
+    /**
+     * 请求地址不存在：业务码 404，仅表示"地址不存在"，
+     * 任何业务失败（含鉴权失败、token 过期）都不得复用它（见 BE-29）。
+     */
+    public static <T> JSONResult<T> notFound()
+    {
+        JSONResult<T> res=new JSONResult<>();
+        res.code=404;
+        res.msg="请求地址不存在";
+        return res;
+    }
+
+    /**
+     * 自定义业务码。用于错误出口需要按真实错误类型分类返回的场景（见 BE-29）。
+     *
+     * @param code 业务码（200/400/401/403/404/500）
+     * @param msg  提示文案
+     */
+    public static <T> JSONResult<T> fail(int code, String msg)
+    {
+        JSONResult<T> res=new JSONResult<>();
+        res.code=code;
+        res.msg=msg;
+        return res;
+    }
+
     public static <T> JSONResult<T> permissionDenied()
     {
         JSONResult<T> res=new JSONResult<>();

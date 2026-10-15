@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.czh.common.exception.ErrorException;
 import com.czh.service.dao.UploadFilesDao;
-import com.czh.service.dto.admin.base.GetFileListDto;
+import com.czh.service.dto.admin.GetFileListDto;
 import com.czh.service.entity.UploadFiles;
 import com.czh.service.service.AsyncService;
 import com.czh.service.service.UploadFilesService;
 import com.czh.service.service.UploadSetService;
-import com.czh.service.vo.admin.base.UploadLog;
+import com.czh.service.vo.admin.UploadFileListVo;
+import com.czh.service.vo.admin.UploadLog;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,9 @@ public class UploadFilesServiceImpl extends ServiceImpl<UploadFilesDao,UploadFil
     }
 
     @Override
-    public PageInfo<UploadFiles> getFileList(GetFileListDto req) {
+    public PageInfo<UploadFileListVo> getFileList(GetFileListDto req) {
         PageHelper.startPage(req.getPage(),req.getSize(),"atime desc");
-        List<UploadFiles> vos=baseMapper.selectByPid(req);
+        List<UploadFileListVo> vos=baseMapper.selectByPid(req);
         return new PageInfo<>(vos);
     }
 

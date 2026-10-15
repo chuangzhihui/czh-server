@@ -1,5 +1,7 @@
 package com.czh.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import lombok.SneakyThrows;
 
 import java.text.DateFormat;
@@ -10,6 +12,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+@Slf4j
 public class DateUtil {
     /**
      * 获取当前日期字符串 默认 yyyy-MM-dd HH:mm:ss
@@ -57,7 +60,7 @@ public class DateUtil {
         try {
             newDate = df.parse(dateStr);
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
         }
         return newDate;
     }

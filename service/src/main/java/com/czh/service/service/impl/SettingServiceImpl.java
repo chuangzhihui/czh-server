@@ -24,9 +24,9 @@ public class SettingServiceImpl extends ServiceImpl<SettingDao,Setting> implemen
 
     @Override
     public PageInfo<GetSettingListVo> getSettingList(PageDto req) {
-        if(!req.getOrderBy().isEmpty()){
-            req.setOrderBy("id "+req.getOrderBy());
-        }
+        // BE-03：与 AdminServiceImpl / RoleServiceImpl 统一走白名单出口。
+        // 这是评估报告 BE-03 未列到的第四个调用点（同构写法），一并收敛。
+        req.setOrderBy(req.buildOrderBy("id"));
         PageHelper.startPage(req.getPage(),req.getSize(),req.getOrderBy());
         List<GetSettingListVo> vos= baseMapper.getSettingList();
         return new PageInfo<>(vos);

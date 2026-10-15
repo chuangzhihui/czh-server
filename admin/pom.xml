@@ -13,13 +13,12 @@
     <version>${revision}</version>
     <name>admin</name>
     <description>管理后台模块</description>
-    <packaging>pom</packaging>
-    <modules>
-        <module>admin-system</module>
-        <module>admin-base</module>
-        <module>admin-recruit</module>
-    </modules>
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.czh</groupId>
@@ -28,5 +27,59 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <finalName>CZH_admin</finalName>
+        <resources>
+            <!-- maven打jar包时没有将resources编译，在此指定进行编译 -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <!-- http://maven.apache.org/plugins/maven-resources-plugin/examples/resource-directory.html -->
+                <!--<filtering>false</filtering>-->
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${springboot.version}</version>
+                <!--                正确打包本地加密jar包，不可删除-->
+                <configuration>
+                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <!--
+              BE-10：原配置显式 <skipTests>true</skipTests>，把"跳过测试"写成模板的默认行为，
+              所有 fork 出去的项目都会继承不可测。现删除该配置，测试默认执行；
+              确需临时跳过时用命令行 mvn -DskipTests package，不要写进 pom。
+              版本保留显式声明（>3.0 才原生支持 JUnit 5 / Jupiter 引擎）。
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

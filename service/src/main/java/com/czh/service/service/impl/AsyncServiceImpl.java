@@ -1,5 +1,7 @@
 package com.czh.service.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.czh.common.utils.aliOssUtil.AliOssUtil;
@@ -27,6 +29,7 @@ import java.io.File;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Service
 @Log4j2
+@Slf4j
 public class AsyncServiceImpl implements AsyncService {
     @Autowired
     AdminActionLogService adminActionLogService;
@@ -38,7 +41,7 @@ public class AsyncServiceImpl implements AsyncService {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("ceshiAsync");
+        log.info("ceshiAsync");
     }
 
     @Override

@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Locale;
 
 @Slf4j
@@ -50,11 +49,9 @@ public class LocalUploadUtil {
         String originalFilename=file.getOriginalFilename();
         String[] arr=originalFilename.split("\\.");
         String extName=arr[arr.length -1].toLowerCase(Locale.ROOT);
-        String[] allowFiles=new String[]{"zip","doc","docx","rar","png","jpeg","jpg","xls","xlsx","pdf","mp4","avi","mkv"};
-        if(!Arrays.asList(allowFiles).contains(extName))
-        {
-           throw new ErrorException("不支持上传此类文件:"+extName);
-        }
+        //扩展名白名单已上收到 UploadController.doUpload 统一收口（BE-07 合并）：
+        //原实现只有本地分支有白名单，七牛/阿里/腾讯/火山四个分支任意扩展名都能传；
+        //五家分支共用一份白名单后不再在此重复维护。此处仅保留 extName 提取，供下方 PDF 的 XSS 检查使用。
         String filename=checkFile(file.getOriginalFilename(),uploadPath);
         if(extName.equals("pdf"))
         {
@@ -77,7 +74,7 @@ public class LocalUploadUtil {
             Path path= Paths.get(uploadPath+filename);
             Files.write(path,bytes);
         }catch (IOException e){
-            e.printStackTrace();
+            log.error("执行异常", e);
             throw new ErrorException("上传失败!");
         }
         LocalUploadVo localUploadVo=new LocalUploadVo();

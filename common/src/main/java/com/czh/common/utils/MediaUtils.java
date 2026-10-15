@@ -1,5 +1,7 @@
 package com.czh.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.czh.common.exception.ErrorException;
 import com.github.kokorin.jaffree.StreamType;
 import com.github.kokorin.jaffree.ffmpeg.FFmpeg;
@@ -24,6 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
+@Slf4j
 public class MediaUtils {
     /**
      * 图片文件转BufferedImage
@@ -33,13 +36,13 @@ public class MediaUtils {
     public static BufferedImage ImageFileToBufferedImage(File imageFile)
     {
         if (imageFile == null || !imageFile.exists() || !imageFile.isFile()) {
-            System.out.println("图片文件不存在或不是有效文件");
+            log.info("图片文件不存在或不是有效文件");
             return null;
         }
         try (ImageInputStream inputStream = ImageIO.createImageInputStream(imageFile)) {
             return ImageIO.read(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
             return null;
         }
     }
@@ -48,8 +51,8 @@ public class MediaUtils {
         try (InputStream inputStream = file.getInputStream()) {
            return ImageIO.read(inputStream);
         } catch (IOException e) {
-            System.out.println("读取图片流失败：" + e.getMessage());
-            e.printStackTrace();
+            log.info("读取图片流失败：" + e.getMessage());
+            log.error("执行异常", e);
             return null;
         }
     }
@@ -63,14 +66,14 @@ public class MediaUtils {
      */
     public static boolean compressImage(File srcFile, File destFile, double scale, float quality) {
         if (srcFile == null || !srcFile.exists() || scale <= 0 || scale > 1 || quality < 0 || quality > 1) {
-            System.out.println("压缩参数无效");
+            log.info("压缩参数无效");
             return false;
         }
 
         try {
             BufferedImage srcImage = ImageIO.read(srcFile);
             if (srcImage == null) {
-                System.out.println("源图片读取失败");
+                log.info("源图片读取失败");
                 return false;
             }
 
@@ -92,7 +95,7 @@ public class MediaUtils {
 
             Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(format);
             if (!writers.hasNext()) {
-                System.out.println("不支持的图片格式：" + format);
+                log.info("不支持的图片格式：" + format);
                 return false;
             }
 
@@ -112,7 +115,7 @@ public class MediaUtils {
 
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("执行异常", e);
             return false;
         }
     }
@@ -208,7 +211,7 @@ public class MediaUtils {
             return false;
 //            throw new RuntimeException("封面提取失败：" + coverPath);
         }
-        System.out.println("封面提取成功：" + coverPath);
+        log.info("封面提取成功：" + coverPath);
         return true;
     }
 }

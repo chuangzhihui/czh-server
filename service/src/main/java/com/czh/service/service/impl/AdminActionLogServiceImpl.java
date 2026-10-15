@@ -1,51 +1,40 @@
 package com.czh.service.service.impl;
 
-import com.czh.common.utils.mongoUtil.MongoUtil;
-import com.czh.service.dto.admin.base.AdminLogDto;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.czh.service.dao.AdminActionLogDao;
+import com.czh.service.dto.admin.AdminLogDto;
 import com.czh.service.entity.AdminActionLog;
-import com.czh.service.repository.AdminActionLogRepository;
 import com.czh.service.service.AdminActionLogService;
+import com.czh.service.vo.admin.AdminActionLogVo;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * 后台管理员操作日志表(AdminActionLog)表服务实现类
+ * 数据源：MySQL
+ */
 @Service
-public class AdminActionLogServiceImpl implements AdminActionLogService {
-    @Autowired
-    AdminActionLogRepository adminActionLogRepository;
-    @Autowired
-    MongoUtil mongoUtil;
+public class AdminActionLogServiceImpl extends ServiceImpl<AdminActionLogDao, AdminActionLog> implements AdminActionLogService {
+
+    /**
+     * 保存操作日志（由 AsyncService 异步调用）
+     */
     @Override
     public void saveAdminActionLog(AdminActionLog adminActionLog) {
-        adminActionLogRepository.save(adminActionLog);
+        baseMapper.insert(adminActionLog);
     }
 
+    /**
+     * 操作日志分页查询
+     */
     @Override
-    public PageInfo<AdminActionLog> adminLog(AdminLogDto req) {
-        PageRequest pageRequest = PageRequest.of(req.getPage()-1, req.getSize(), Sort.by(Sort.Direction.DESC,"createTime"));
-        ArrayList<Criteria> criteria = new ArrayList<>();
-        if (req.getAdminId() != null){
-            criteria.add(Criteria.where("userID").is(req.getAdminId()));
-        }
-        if (req.getIp() != null && !req.getIp().isEmpty()) {
-            criteria.add(Criteria.where("ip").regex(".*?\\"+req.getIp()+".*"));
-        }
-        if (req.getAddress() != null && !req.getAddress().isEmpty()) {
-            criteria.add(Criteria.where("method").regex(".*?\\"+req.getAddress()+".*"));
-        }
-        if (req.getDesc() != null && !req.getDesc().isEmpty()) {
-            criteria.add(Criteria.where("operation").regex(".*?\\"+req.getDesc()+".*"));
-        }
-
-        if(req.getStime()!=null && !req.getStime().isEmpty())
-        {
-            criteria.add(Criteria.where("createTime").gte(req.getStime()).lte(req.getEtime()));
-        }
-        return mongoUtil.queryPage(criteria, pageRequest, AdminActionLog.class);
+    public PageInfo<AdminActionLogVo> adminLog(AdminLogDto req) {
+        // 分页与排序：排序固定在 XML 中按 createTime desc，避免 orderBy 直接拼接带来的注入风险
+        PageHelper.startPage(req.getPage(), req.getSize());
+        List<AdminActionLogVo> list = baseMapper.getAdminLogList(req);
+        return new PageInfo<>(list);
     }
 }
